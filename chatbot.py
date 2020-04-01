@@ -68,13 +68,31 @@ def getHeight(index):
     flrs = int(json_obj[0]['segments'][0]['flrs'])
     return f2f * flrs
 
+def getFloorArea(index):
+    json_obj = getJson('beats.json')
+    flrs = int(json_obj[0]['segments'][0]['flrs'])
+    gfa = float(json_obj[0]['segments'][0]['gfa'])
+    return gfa / flrs
+
+def getVolume(index):
+    json_obj = getJson('beats.json')
+    return getFloorArea(index) * getHeight(index)
+
+
 def getBuildingHeight(bot, update):
     chat_id = update.message.chat_id
-    json_obj = getJson('beats.json')
     args = getArgs(update)
     bot.send_message(chat_id=chat_id, text=getHeight(int(args[0])))
 
+def getBuildingFloorArea(bot, update):
+    chat_id = update.message.chat_id
+    args = getArgs(update)
+    bot.send_message(chat_id=chat_id, text=getFloorArea(int(args[0])))
 
+def getBuildingVolume(bot, update):
+    chat_id = update.message.chat_id
+    args = getArgs(update)
+    bot.send_message(chat_id=chat_id, text=getVolume(int(args[0])))
 
 def main():
     updater = Updater(token)
@@ -82,6 +100,8 @@ def main():
     dp.add_handler(CommandHandler('bop', bop))
     dp.add_handler(CommandHandler('get', get))
     dp.add_handler(CommandHandler('getHeight', getBuildingHeight))
+    dp.add_handler(CommandHandler('getFloorArea', getBuildingFloorArea))
+    dp.add_handler(CommandHandler('getVolume', getBuildingVolume))
     updater.start_polling()
     updater.idle()
     
