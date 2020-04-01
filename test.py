@@ -12,8 +12,10 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-TEAM, INFO = range(2)
-
+INFO, GIVE_INFO = range(2)
+TEAM = ""
+TEAM_INDEX = 0
+METRIC = ""
 
 def start(update, context):
     reply_keyboard = [[]]
@@ -26,19 +28,39 @@ def start(update, context):
         'Send /cancel to stop talking to me.\n\n'
         'Which team would you like to examine?',
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
-
-    return TEAM
+    return INFO
 
 
 def info(update, context):
-    reply_keyboard = [['Height','Volume','Floor Area']]
     json_obj = getJson('beats.json')
+    user = update.message.from_user
+    TEAM = update.message.text
+    for i in range(len(json_obj)):
+        if json_obj[i]['team'] == TEAM:
+            TEAM_INDEX=i
+            break
+    logger.info("Team that %s wishes to examine: %s", user.first_name, TEAM)
+    reply_keyboard = [['Height','Volume','Floor Area']]
+    
     update.message.reply_text(
-        'What information would you like?',
+        "What information would you like on team " + TEAM,
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+    return GIVE_INFO
 
-    return TEAM
-    return ConversationHandler.END
+def give_info(update, context):
+    json_obj = getJson('beats.json')
+    user = update.message.from_user
+    METRIC = update.message.text
+    logger.info("Metric user %s desires: %s", user.first_name, METRIC)
+    if (METRIC == 'Height'):
+        update.message.reply_text('The height of the building is: ' + str(getHeight(TEAM_INDEX)),
+        reply_markup=ReplyKeyboardRemove())
+    elif (METRIC == 'Volume'):
+        update.message.reply_text('The volume of the building is: ' + str(getVolume(TEAM_INDEX)),
+        reply_markup=ReplyKeyboardRemove())
+    elif (METRIC == 'Floor Area'):
+        update.message.reply_text('The floor area is: ' + str(getFloorArea(TEAM_INDEX)),
+        reply_markup=ReplyKeyboardRemove())
 
 
 def cancel(update, context):
@@ -69,9 +91,8 @@ def main():
         entry_points=[CommandHandler('start', start)],
 
         states={
-            TEAM: [MessageHandler(Filters.regex(''), start)],
-
             INFO: [MessageHandler(Filters.regex(''), info)],
+            GIVE_INFO: [MessageHandler(Filters.regex(''), give_info)],
         },
 
         fallbacks=[CommandHandler('cancel', cancel)]
