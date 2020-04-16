@@ -1,1 +1,19 @@
 __pycache__/
+*.ini
+
+# Log file
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# JavaScript #
+3DViewer/node_modules/
+.idea/
+3DViewer/package-lock.json

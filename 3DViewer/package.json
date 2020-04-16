@@ -1,0 +1,33 @@
+{
+  "name": "ifc.json-viewer",
+  "version": "0.1.0",
+  "description": "An app that supports import of IFC.JSON open standard",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app",
+    "test": "node app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dennisrshelden/IFC.JSON-Viewer.git"
+  },
+  "keywords": [
+    "IFC",
+    "JSON",
+    "BIM"
+  ],
+  "author": {
+    "name": "Dennis Shelden",
+    "email": "sheldd@rpi.edu"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dennisrshelden/IFC.JSON-Viewer/issues"
+  },
+  "homepage": "https://github.com/dennisrshelden/IFC.JSON-Viewer#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.5.5",
+    "serve-index": "^1.9.1"
+  }
+}
