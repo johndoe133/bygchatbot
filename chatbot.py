@@ -62,21 +62,23 @@ def getJson(filename):
         json_obj = json.load(json_file)
     return json_obj
 
-def getHeight(index):
+def getHeight(team_index, segment_index):
     json_obj = getJson('beats.json')
-    f2f = float(json_obj[0]['segments'][0]['f2f'])
-    flrs = int(json_obj[0]['segments'][0]['flrs'])
+    f2f = float(json_obj[team_index]['segments'][segment_index]['f2f'])
+    print(team_index)
+    print(segment_index)
+    flrs = int(json_obj[team_index]['segments'][segment_index]['flrs'])
     return f2f * flrs
 
-def getFloorArea(index):
+def getFloorArea(team_index, segment_index):
     json_obj = getJson('beats.json')
-    flrs = int(json_obj[0]['segments'][0]['flrs'])
-    gfa = float(json_obj[0]['segments'][0]['gfa'])
+    flrs = int(json_obj[team_index]['segments'][segment_index]['flrs'])
+    gfa = float(json_obj[team_index]['segments'][segment_index]['gfa'])
     return gfa / flrs
 
-def getVolume(index):
+def getVolume(team_index, segment_index):
     json_obj = getJson('beats.json')
-    return getFloorArea(index) * getHeight(index)
+    return getFloorArea(team_index, segment_index) * getHeight(team_index, segment_index)
 
 
 def getBuildingHeight(bot, update):
