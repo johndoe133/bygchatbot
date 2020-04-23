@@ -96,6 +96,9 @@ def getBuildingVolume(bot, update):
     args = getArgs(update)
     bot.send_message(chat_id=chat_id, text=getVolume(int(args[0])))
 
+def download_file(bot, update):
+    print(update.message)
+
 def main():
     updater = Updater(token)
     dp = updater.dispatcher
@@ -104,6 +107,7 @@ def main():
     dp.add_handler(CommandHandler('getHeight', getBuildingHeight))
     dp.add_handler(CommandHandler('getFloorArea', getBuildingFloorArea))
     dp.add_handler(CommandHandler('getVolume', getBuildingVolume))
+    dp.add_handler(CommandHandler('sendFile', download_file))
     updater.start_polling()
     updater.idle()
     
