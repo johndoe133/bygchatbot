@@ -28,9 +28,11 @@ def request_file(update, context):
     if (response == 'Image'):
         print('here')
         logger.info("User %s wishes to upload an image", user.first_name)
+        update.message.reply_text("Send an image file to me")
         return GET_IMAGE
     elif (response.lower() == 'beats'):
         logger.info("User %s wishes to upload beats", user.first_name)
+        update.message.reply_text("Send a .json file to me")
         return GET_BEATS
     else:
         return ConversationHandler.END
@@ -45,14 +47,13 @@ def get_image(update, context):
     file_id = update.message.photo[-1].file_id
     print("\n------------\n",file_id,"\n-------------------\n")
     base_url = 'https://api.telegram.org/bot'
-    print(base_url + token + '/getFile?file_id=' + file_id)
     with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
         data = json.loads(obj.read())
     print(data)
-    print('https://api.telegram.org/file/bot' + token + data['result']['file_path'])
     f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
     open('image.jpg','wb').write(f.content)
     logger.info('Image successfully acquired from %s', user.first_name)
+    update.message.reply_text("Image acquired!")
     return ConversationHandler.END
 
 def get_beats(update, context):
@@ -63,14 +64,13 @@ def get_beats(update, context):
     chat_id = update.message.chat_id
     print(update.message)
     file_id = update.message.document.file_id
-    print("\n------------\n",file_id,"\n-------------------\n")
     base_url = 'https://api.telegram.org/bot'
     print(base_url + token + '/getFile?file_id=' + file_id)
     with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
         data = json.loads(obj.read())
     print(data)
-    print('https://api.telegram.org/file/bot' + token + data['result']['file_path'])
     f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
-    open('beats2.json','wb').write(f.content)
+    open('beats.json','wb').write(f.content)
     logger.info('Beats successfully acquired from %s', user.first_name)
+    update.message.reply_text("Beats acquired!")
     return ConversationHandler.END
