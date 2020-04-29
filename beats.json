@@ -1,6 +1,6 @@
 [{
 		"name": "---",
-		"team": "1",
+		"team": "rocket",
 		"segments": [{
 				"id": "0",
 				"order": "body",
@@ -8,6 +8,14 @@
 				"flrs": "20",
 				"gfa": "1000",
 				"f2f": "4"
+			},
+			{
+				"id": "1",
+				"order": "head",
+				"name": "head",
+				"flrs": "10",
+				"gfa": "500",
+				"f2f": "6"
 			}
 		],
 		"min_off_hgt": "2.5",

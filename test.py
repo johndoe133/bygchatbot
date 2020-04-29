@@ -1,81 +1,18 @@
 from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight, 
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
-
+import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
+from info import *
+from files import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
 logger = logging.getLogger(__name__)
-
-INFO, GIVE_INFO = range(2)
-TEAM = ""
-TEAM_INDEX = 0
-METRIC = ""
-
-def start(update, context):
-    reply_keyboard = [[]]
-    json_obj = getJson('beats.json')
-    for team in json_obj:
-        reply_keyboard[0] += team['team']
-
-    update.message.reply_text(
-        'Hi! I am the BygBot. I will hold a conversation with you. '
-        'Send /cancel to stop talking to me.\n\n'
-        'Which team would you like to examine?',
-        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
-    return INFO
-
-
-def info(update, context):
-    json_obj = getJson('beats.json')
-    user = update.message.from_user
-    TEAM = update.message.text
-    for i in range(len(json_obj)):
-        if json_obj[i]['team'] == TEAM:
-            TEAM_INDEX=i
-            break
-    logger.info("Team that %s wishes to examine: %s", user.first_name, TEAM)
-    reply_keyboard = [['Height','Volume','Floor Area']]
-    
-    update.message.reply_text(
-        "What information would you like on team " + TEAM,
-        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
-    return GIVE_INFO
-
-def give_info(update, context):
-    json_obj = getJson('beats.json')
-    user = update.message.from_user
-    METRIC = update.message.text
-    logger.info("Metric user %s desires: %s", user.first_name, METRIC)
-    if (METRIC == 'Height'):
-        update.message.reply_text('The height of the building is: ' + str(getHeight(TEAM_INDEX)),
-        reply_markup=ReplyKeyboardRemove())
-    elif (METRIC == 'Volume'):
-        update.message.reply_text('The volume of the building is: ' + str(getVolume(TEAM_INDEX)),
-        reply_markup=ReplyKeyboardRemove())
-    elif (METRIC == 'Floor Area'):
-        update.message.reply_text('The floor area is: ' + str(getFloorArea(TEAM_INDEX)),
-        reply_markup=ReplyKeyboardRemove())
-
-
-def cancel(update, context):
-    user = update.message.from_user
-    logger.info("User %s canceled the conversation.", user.first_name)
-    update.message.reply_text('Bye! I hope we can talk again some day.',
-                              reply_markup=ReplyKeyboardRemove())
-
-    return ConversationHandler.END
-
-
-def error(update, context):
-    """Log Errors caused by Updates."""
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
-
 
 def main():
     # Create the Updater and pass it your bot's token.
@@ -87,18 +24,29 @@ def main():
     dp = updater.dispatcher
 
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
-    conv_handler = ConversationHandler(
+    conv_handler_info = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
-
         states={
-            INFO: [MessageHandler(Filters.regex(''), info)],
+            TEAM_INFO: [MessageHandler(Filters.regex(''), team_info)],
+            SEGMENT_INFO: [MessageHandler(Filters.regex(''), segments_info)],
             GIVE_INFO: [MessageHandler(Filters.regex(''), give_info)],
         },
 
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
-    dp.add_handler(conv_handler)
+    conv_handler_file = ConversationHandler(
+        entry_points=[CommandHandler('sendfile', ask_file_type)],
+        states={
+            REQUEST_FILE: [MessageHandler(Filters.all, request_file)],
+            GET_IMAGE: [MessageHandler(Filters.all, get_image)],
+            GET_BEATS: [MessageHandler(Filters.all, get_beats)],
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    dp.add_handler(conv_handler_info)
+    dp.add_handler(conv_handler_file)
 
     # log all errors
     dp.add_error_handler(error)
