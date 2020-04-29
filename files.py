@@ -69,14 +69,14 @@ def get_beats(update, context):
     open('temp_beats.json','wb').write(f.content)
     logger.info('Beats received from %s', user.first_name)
     temp_json = getJson("temp_beats.json")
-    print(validate_beats(temp_json))
-    if (validate_beats(temp_json)):
+    valid = (validate_beats(temp_json))
+    if (valid == "valid"):
         open('beats.json','wb').write(f.content)
         logger.info('Beats successfully acquired from %s', user.first_name)
         update.message.reply_text("Beats acquired!")
     else:
-        logger.info('Beats acquired from %s %s', user.first_name, 'were invalid')
-        update.message.reply_text("Invalid beats file, try again")
+        logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
+        update.message.reply_text("Invalid beats file due to " + valid + ", try again")
     return ConversationHandler.END
 
 def validate_beats(obj):
@@ -115,6 +115,25 @@ def validate_beats(obj):
     try:
         validate(instance=obj, schema=beats_schema)
     except jsonschema.exceptions.ValidationError as err:
-        print(err)
-        return False
-    return True
+        return "type error"
+    if (check_team_duplicates(obj)):
+        return "duplicate team"
+    elif (check_id_duplicates(obj)):
+        return "duplicate id"
+    else:
+        return "valid"
+
+def check_team_duplicates(json_obj):
+    for index, team in enumerate(json_obj):
+        for i in range(index+1, len(json_obj)):
+            if (team["team"] == json_obj[i]['team']):
+                return True
+    return False
+
+def check_id_duplicates(json_obj):
+    for team in json_obj:
+        for index, segment in enumerate(team['segments']):
+            for i in range(index+1, len(team['segments'])):
+                if (segment['id'] == json_obj[index]['segments'][i]['id']):
+                    return True
+    return False
