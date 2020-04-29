@@ -50,7 +50,7 @@ def team_info(update, context):
     logger.info("Team index: %i", TEAM_INDEX)
     reply_keyboard = [[]]
     for segment in json_obj[TEAM_INDEX]["segments"]:
-        reply_keyboard[0].append(segment["id"])
+        reply_keyboard[0].append(str(segment["id"]))
     json_team = json_obj[TEAM_INDEX]
     update.message.reply_text(
         "This is the information I found on team " + TEAM + "\n\n-------\n"
