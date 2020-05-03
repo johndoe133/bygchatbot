@@ -4,9 +4,11 @@ import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
-                          ConversationHandler)
+                          ConversationHandler, Defaults)
 from info import *
 from files import *
+from AgileHelp import *
+from define import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -18,7 +20,8 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    updater = Updater(token, use_context=True)
+    defaults = Defaults(parse_mode=ParseMode.HTML)
+    updater = Updater(token, use_context=True, defaults=defaults)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -45,8 +48,25 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    conv_handler_agile_help = ConversationHandler(
+        entry_points=[CommandHandler('helpagile', help_agile)],
+        states = {
+            DEFINE: [MessageHandler(Filters.regex(''), define)],
+            DEFINE_ADDITIONAL: [MessageHandler(Filters.regex(''), define_additional)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    conv_handler_define = ConversationHandler(
+        entry_points=[CommandHandler('define', give_def_direct)],
+        states = {},
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
+    dp.add_handler(conv_handler_agile_help)
+    dp.add_handler(conv_handler_define)
 
     # log all errors
     dp.add_error_handler(error)
