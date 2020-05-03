@@ -10,7 +10,7 @@
             "f2f": 4
         },
         {
-            "id": 1,
+            "id": 3,
             "order": "head",
             "name": "head",
             "flrs": 10,
@@ -28,7 +28,7 @@
     "perm_open_off": 1
 },
 {
-    "name": "---",
+    "name": "Eric",
     "team": "2",
     "segments": [{
         "id": 0,
