@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 DEFINE, DEFINE_ADDITIONAL = range(2)
 terms = ['Manifesto', 'Overall', 'Sprint', 'Scrum', 'Roles', 
     'User Stories']
-additional_terms = ['Product Backlog', 'Sprint Backlog', 'Minimum Viable Product', 'Sprint Planning Meeting', 'Daily Scrum']
+additional_terms = ['Product Backlog', 'Sprint Backlog', 'Minimum Viable Product', 'Sprint Planning Meeting', 
+'Daily Scrum', 'Sprint Review', 'Sprint Retrospective']
 def help_agile(update, context):
     logger.info('user %s would like some agile definitions', update.message.from_user.name)
     update.message.reply_text(
@@ -33,7 +34,8 @@ def define(update, context):
     if (term == 'Additional Terms'):
         update.message.reply_text(
         'Which of the following additional terms would you like to know more about?',
-        reply_markup=ReplyKeyboardMarkup([additional_terms[0:2],additional_terms[2:4], additional_terms[4:]], one_time_keyboard=True))
+        reply_markup=ReplyKeyboardMarkup([additional_terms[0:2],additional_terms[2:4], 
+        additional_terms[4:]], one_time_keyboard=True))
         return DEFINE_ADDITIONAL
     give_definition(term, update)
     return ConversationHandler.END
@@ -173,4 +175,21 @@ def give_definition(word, update):
         update.message.reply_text('For more information, click the following link\n'
         'https://en.wikipedia.org/wiki/Scrum_(software_development)#Daily_scrum')
 
+    elif (word.lower() == additional_terms[5].lower()): # Sprint Review
+        update.message.reply_text(' At the end of each sprint, the entire scrum team '
+        'holds a sprint review meeting. During this meeting the team reviews and '
+        'presents what has been completed, sometimes in form of a demo. A discussion '
+        'of what was not completed is had, as well as figuring out with the product '
+        'owner on what to work on next.')
+        update.message.reply_text('For more information, click the following link\n'
+        'https://en.wikipedia.org/wiki/Scrum_(software_development)#Sprint_review')
+    
+    elif (word.lower() == additional_terms[6].lower()): # sprint retrospective
+        update.message.reply_text('The sprint retrospective is a meeting held in order '
+        'to allow the team to continue to improve based on the last completed sprint. '
+        'The focus is to review what practices the team should continue to use, which '
+        'they should stop using and what they should start doing to allow optimal '
+        'performance during the next sprint.')
+        update.message.reply_text('For more information, click the following link\n'
+        'https://en.wikipedia.org/wiki/Scrum_(software_development)#Sprint_Retrospective')
 
