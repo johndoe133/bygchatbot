@@ -2,7 +2,7 @@ from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight,
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
 import json
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
@@ -27,11 +27,25 @@ def start(update, context):
     for i, team in enumerate(json_obj):
         del json_obj[i]['segments']
         reply_keyboard[0].append(team['team'])
-    
+    json_formatted = json.dumps(json_obj, indent=0)
+    formatted_str = "<code>----------</code>\n"
+    for line in json_formatted.split("\n"):
+        if (line == "{"):
+            formatted_str += ""
+        elif (line in ["},","}"]):
+            formatted_str += "<code>----------</code>\n"
+        elif (line in ["[","]"]):
+            pass
+        else:
+            if ("name" in line or "team" in line):
+                line = line.replace("\"", "")
+                line = line.strip(",")
+                line = line.split(": ")
+                formatted_str += f'<code>{line[0]:5}: {line[1]:<20}</code>\n'
     update.message.reply_text(
         'Hi! I am the BygBot. I will hold a conversation with you. '
         'Send /cancel to stop talking to me.\n\n'
-        'This is the information I found so far:\n' + json.dumps(json_obj, indent=2) + 
+        'This is the information I found so far:\n' + formatted_str + 
         '\nWhich team would you like to examine?',
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return TEAM_INFO
@@ -52,9 +66,29 @@ def team_info(update, context):
     for segment in json_obj[TEAM_INDEX]["segments"]:
         reply_keyboard[0].append(str(segment["id"]))
     json_team = json_obj[TEAM_INDEX]
+    json_formatted = json.dumps(json_obj[TEAM_INDEX], indent=2)
+    formatted_str = "==========================\n"
+    for line in json_formatted.split("\n"):
+        if (line == "{"):
+            formatted_str += ""
+        elif (line in ["    {"]):
+            formatted_str += ""
+        elif (line in ["},", "}"]):
+            formatted_str += "==========================\n"
+        elif (line in ["    },", "    }"]):
+            formatted_str += "<code>    ---</code>\n"
+        elif (line.strip() in ["[","]","],"]):
+            pass
+        else:
+            line = line.replace("\"", "")
+            line = line.strip(",")
+            line = line.split(": ")
+            if (line[1] == "["):
+                line[1] = ""
+            formatted_str += f'<code>{line[0][2:]:15}:{line[1]:>10}</code>\n'
     update.message.reply_text(
-        "This is the information I found on team " + TEAM + "\n\n-------\n"
-        +json.dumps(json_obj[TEAM_INDEX], indent=2)+ "\n--------\n"
+        "This is the information I found on team " + TEAM + "\n"
+        +formatted_str+ "\n--------\n"
 
         "Which segment would you like to look at?",
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
@@ -67,14 +101,26 @@ def segments_info(update, context):
     global TEAM_INDEX
     global SEGMENT_INDEX
     reply_keyboard = [['Height','Volume','Floor Area', 'Cancel']]
-    print(TEAM_INDEX)
     for index, segment in enumerate(json_obj[TEAM_INDEX]['segments']):
         if segment['id'] == SEGMENT:
             SEGMENT_INDEX = index
-    print(SEGMENT_INDEX)
+    json_formatted = json.dumps(json_obj[TEAM_INDEX]['segments'][SEGMENT_INDEX], indent=0)
+    formatted_str = "==========================\n"
+    for line in json_formatted.split("\n"):
+        if (line == "{"):
+            formatted_str += ""
+        elif (line in ["},","}"]):
+            formatted_str += "==========================\n"
+        elif (line in ["[","]"]):
+            pass
+        else:
+            line = line.replace("\"", "")
+            line = line.strip(",")
+            line = line.split(": ")
+            formatted_str += f'<code>{line[0]:15}: {line[1]:>10}</code>\n'
     update.message.reply_text(
         "This is the information I found on segment " + SEGMENT + "\n\n-------\n"
-        +json.dumps(json_obj[TEAM_INDEX]['segments'][SEGMENT_INDEX], indent=2)+ "\n--------\n"
+        +formatted_str+ "\n--------\n"
         "What further information would you like on segment " + SEGMENT,
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return GIVE_INFO
