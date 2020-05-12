@@ -9,6 +9,8 @@ from info import *
 from files import *
 from AgileHelp import *
 from define import *
+from teamCreater import *
+from teamJoiner import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -17,11 +19,13 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 def main():
+    print("we're alive!!")
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
     defaults = Defaults(parse_mode=ParseMode.HTML)
     updater = Updater(token, use_context=True, defaults=defaults)
+    
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -57,6 +61,25 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    conv_handler_create_json = ConversationHandler(
+        entry_points=[CommandHandler('createteam', create_team)],
+        states = {
+            NUMBER_GROUPS: [MessageHandler(Filters.regex(''), number_groups)],
+            NAME_GROUP: [MessageHandler(Filters.regex(''), name_group)],
+            MAKE_GROUP: [MessageHandler(Filters.regex(''), make_group)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    conv_handler_join_team = ConversationHandler(
+        entry_points=[CommandHandler('jointeam', join_team)],
+        states = {
+            CHOOSE_TEAM: [MessageHandler(Filters.regex(''), choose_team)],
+            ADD_TO_TEAM: [MessageHandler(Filters.regex(''), add_to_team)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
     conv_handler_define = ConversationHandler(
         entry_points=[CommandHandler('define', give_def_direct)],
         states = {},
@@ -67,6 +90,10 @@ def main():
     dp.add_handler(conv_handler_file)
     dp.add_handler(conv_handler_agile_help)
     dp.add_handler(conv_handler_define)
+    dp.add_handler(conv_handler_create_json)
+    dp.add_handler(conv_handler_join_team)
+
+
 
     # log all errors
     dp.add_error_handler(error)
