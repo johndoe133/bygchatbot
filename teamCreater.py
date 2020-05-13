@@ -37,35 +37,31 @@ def create_team(update, context):
     print(user)
 
     logger.info('user %s wants to update teams', update.message.from_user.name)
-    update.message.reply_text(
-        #remove this sometime
-        'you wanna create teams json file!?'
-        )
-
+    
     #with open('testjson2.json', 'w') as outfile:
     #    json.dump(teams, outfile, indent = 4)
     
-    update.message.reply_text('how many groups?')
+    update.message.reply_text('How many groups would you like to create?')
     return NUMBER_GROUPS
     
 
-number=0
+counter = 0
+group_no = 1
 def number_groups(update,context):    
     user = update.message.from_user
-    global number
-    number = update.message.text
+    global counter
+    global group_no
+    counter = update.message.text
     
-    logger.info('user %s wants to create %s teams', user.name, number)
+    logger.info('user %s wants to create %s teams', user.name, counter)
     print(1)
     try: 
-        number = int(number)-1
-        print(2)
-        update.message.reply_text('Select a group name')
+        counter = int(counter)-1
+        update.message.reply_text(f'Write group {group_no}\'s group name')
         return NAME_GROUP
     except:
-        update.message.reply_text('not a number')
+        update.message.reply_text('Not a valid number')
         logger.info('not a number', user.name)
-    print(3)
     return ConversationHandler.END 
 
     
@@ -73,33 +69,35 @@ def number_groups(update,context):
         
 def name_group(update,context):
     print(4)
-    global number
+    global counter
     global teams
+    global group_no
     #user = update.message.from_user
     #logger.info('user %s is now naming %s teams', user.name, number)
     
     print(5)
     groupName = update.message.text
     print(groupName)
-    update.message.reply_text("group name is "+groupName)
-    
+    update.message.reply_text(f"Group {group_no}\'s name is {groupName}")
+    teams['sprint_duration'] = 1
     teams['teams'].append({
         "group_name": groupName,
-        "group_id": (number+1),
-        "group_members" : []
-    })
+        "group_id": (group_no),
+        "group_members" : [],
+        "tasks" : []
 
-    if (number <= 0):
+    })
+    group_no += 1
+
+    if (counter <= 0):
         print(teams)
         with open('teams.json', 'w') as outfile:
             json.dump(teams, outfile, indent = 4)
         return ConversationHandler.END 
-        #return MAKE_GROUP #maybe just end it here instead of going to MAKE_GROUP?
-    else:        
-        number-=1
+    else:
+        counter-=1
         print(6)
-        update.message.reply_text("Select a group name")
-
+        update.message.reply_text(f"Write group {group_no}\'s group name")
         return NAME_GROUP
         #name_group(update,context)
         print("we're done here")    

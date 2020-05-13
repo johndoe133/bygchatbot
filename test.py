@@ -11,6 +11,7 @@ from AgileHelp import *
 from define import *
 from teamCreater import *
 from teamJoiner import *
+from team_viewer import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -86,12 +87,19 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    conv_handler_view_teams = ConversationHandler(
+        entry_points=[CommandHandler('view_teams', view_team)],
+        states = {},
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
     dp.add_handler(conv_handler_agile_help)
     dp.add_handler(conv_handler_define)
     dp.add_handler(conv_handler_create_json)
     dp.add_handler(conv_handler_join_team)
+    dp.add_handler(conv_handler_view_teams)
 
 
 
