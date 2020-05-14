@@ -12,6 +12,7 @@ from define import *
 from teamCreater import *
 from teamJoiner import *
 from team_viewer import *
+from SprintDuration import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -92,6 +93,18 @@ def main():
         states = {},
         fallbacks=[CommandHandler('cancel', cancel)]
     )
+    
+    conv_handler_sprint_duration = ConversationHandler(
+        entry_points=[CommandHandler('sprintduration', set_duration)],
+        states = {
+            EDIT_DURATION: [MessageHandler(Filters.regex(''), edit_duration)],
+            CHOOSE_DURATION: [MessageHandler(Filters.regex(''), choose_duration)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+
+    
 
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
@@ -100,6 +113,7 @@ def main():
     dp.add_handler(conv_handler_create_json)
     dp.add_handler(conv_handler_join_team)
     dp.add_handler(conv_handler_view_teams)
+    dp.add_handler(conv_handler_sprint_duration)
 
 
 
