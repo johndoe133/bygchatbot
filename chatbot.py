@@ -7,7 +7,6 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-token = '1123323323:AAG5kydgweesrh71QXW_J4CmwVxJTSsken4'
 
 def get_url():
     contents = requests.get('https://random.dog/woof.json').json()
@@ -61,6 +60,8 @@ def getJson(filename):
     with open(filename) as json_file:
         json_obj = json.load(json_file)
     return json_obj
+
+token = getJson('token.json')['token']
 
 def getHeight(team_index, segment_index):
     json_obj = getJson('beats.json')
