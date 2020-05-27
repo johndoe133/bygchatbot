@@ -16,7 +16,8 @@ To add the commands into auto-suggest, ask the botfather to edit your bot, edit 
 sendfile - Send a file to bot
 helpagile - Get some definitions on agile terminology
 define - define a specific agile term
-ifc - view and edit ifc file```
+ifc - view and edit ifc file
+```
 
 ## Inserting bot token into your code
 Create a json file called `token.json`, and input the json object `{"token":"[YOUR TOKEN HERE]"}`
