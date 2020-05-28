@@ -21,7 +21,6 @@ def split_triangles_points(items):
             triangles += [line[2:].split(' ')]
         else: 
             logger.info(f'failed at index {index} for line {line}')
-    print(points,"\n=============")
     return points, triangles
 
 def find_min_dimension(points, dimension):
