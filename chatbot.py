@@ -7,13 +7,6 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-# token = '1123323323:AAG5kydgweesrh71QXW_J4CmwVxJTSsken4' #eric
-
-#for unknown reasons do i get a bunch of errors when using this token all of a sudden!?!?
-#token = '877804207:AAFkvtiEzuuctRCDCLIoRBkn5rlSpATTHDs' #
-token = '1026618009:AAG2G7hfNqfFNmwRDCkF5CgFOP7pSfKOCEQ' # try stuff out token
-
-
 def get_url():
     contents = requests.get('https://random.dog/woof.json').json()
     return contents['url']
@@ -66,6 +59,8 @@ def getJson(filename):
     with open(filename) as json_file:
         json_obj = json.load(json_file)
     return json_obj
+
+token = getJson('token.json')['token']
 
 def getHeight(team_index, segment_index):
     json_obj = getJson('beats.json')

@@ -17,6 +17,7 @@ from assignTask import *
 from removeTask import *
 from viewTask import *
 from teamGeneral import *
+from ifc import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -154,8 +155,11 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
-    
-
+    conv_handler_ifc = ConversationHandler(
+        entry_points=[CommandHandler('ifc', start_analysis)],
+        states = {},
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
 
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
@@ -169,10 +173,7 @@ def main():
     # dp.add_handler(conv_handler_remove_task)
     # dp.add_handler(conv_handler_view_task)
     dp.add_handler(conv_handler_team_general)
-
-
-
-
+    dp.add_handler(conv_handler_ifc)
 
     # log all errors
     dp.add_error_handler(error)
