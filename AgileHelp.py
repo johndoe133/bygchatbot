@@ -30,7 +30,6 @@ def define(update, context):
     user = update.message.from_user
     term = update.message.text
     
-
     if (term == 'Additional Terms'):
         update.message.reply_text(
         'Which of the following additional terms would you like to know more about?',

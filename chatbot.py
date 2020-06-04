@@ -7,7 +7,6 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-
 def get_url():
     contents = requests.get('https://random.dog/woof.json').json()
     return contents['url']
@@ -100,6 +99,16 @@ def getBuildingVolume(bot, update):
 def download_file(bot, update):
     print(update.message)
 
+
+#how to get this value in teamcreater?
+def getNum (bot, update):
+    chat_id = update.message.chat_id
+    args = getArgs(update)
+    number = bot.getChatMembersCount(chat_id)
+    bot.send_message(chat_id=chat_id, text=number)
+
+
+
 def main():
     updater = Updater(token)
     dp = updater.dispatcher
@@ -109,6 +118,10 @@ def main():
     dp.add_handler(CommandHandler('getFloorArea', getBuildingFloorArea))
     dp.add_handler(CommandHandler('getVolume', getBuildingVolume))
     dp.add_handler(CommandHandler('sendFile', download_file))
+
+    #temp
+    dp.add_handler(CommandHandler('number', getNum))
+
     updater.start_polling()
     updater.idle()
     
