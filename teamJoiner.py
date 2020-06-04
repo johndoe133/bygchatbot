@@ -18,7 +18,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-CHOOSE_TEAM, ADD_TO_TEAM = range(2)
+CHOOSE_TEAM, ADD_TO_TEAM = range(3,5)
 
 def join_team(update, context):
     global counter
@@ -31,7 +31,7 @@ def join_team(update, context):
     for i in range(len(teams["teams"])):
         team_names += f"  {i}: {teams['teams'][i]['group_name']}\n"
         reply_keyboard += [str(i)]
-    update.message.reply_text(team_names, )
+    update.message.reply_text(team_names)
 
     logger.info('user %s wants to join a teams', update.message.from_user.name)
     update.message.reply_text('which group would you like to join?', 
@@ -70,7 +70,7 @@ def choose_team(update, context):
 
     #teams["teams"][i]["group_members"].remove(user.name) 
 
-    update.message.reply_text('No group with name: "'+ team + '"')
+    update.message.reply_text('No group with name: "'+ team_name + '"')
     return ConversationHandler.END 
 
     #if (user in teams["teams"]

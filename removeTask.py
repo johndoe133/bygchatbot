@@ -27,7 +27,7 @@ def remove_task(update, context):
     global teams
     with open('teams.json') as json_file:
         teams = json.load(json_file)
-    team_names = "<u>Teams:</u> \n"
+    team_names = "<u>Groups:</u> \n"
     reply_keyboard = []
     for i in range(len(teams["teams"])):
         team_names += f"  {i}: {teams['teams'][i]['group_name']}\n"

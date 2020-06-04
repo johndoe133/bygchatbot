@@ -18,34 +18,26 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-temp = range(1)
-
 def view_task(update, context):
 
     global teams
     with open('teams.json') as json_file:
         teams = json.load(json_file)
         
-    team_names = "<u>Teams:</u> \n"
-    tasks = "<u>Tasks:</u> \n"
+    # team_names = "<u>Teams:</u> \n"
+    # tasks = "<u>Tasks:</u> \n"
+
+    tasks_string = ""
 
     reply_keyboard = []
     for i in range(len(teams["teams"])):
-        team_names += f"  {i}: {teams['teams'][i]['group_name']}\n"
+        tasks_string += f"<u>Group {i}: {teams['teams'][i]['group_name']}</u>\n"
         reply_keyboard += [str(i)]
         for j in range(len(teams["teams"][i]["tasks"])):
-            tasks += f"  {j}: {teams['teams'][i]['tasks'][j]}\n"
+            tasks_string += f"  {j}: {teams['teams'][i]['tasks'][j]}\n"
             reply_keyboard += [str(j)]
-    update.message.reply_text(team_names, )
+    update.message.reply_text(tasks_string)
 
 
-    print(team_names,tasks)
-
-    tasks = "<u>Tasks:</u> \n"
-    reply_keyboard = []
-    for j in range(len(teams["teams"][i]["tasks"])):
-        tasks += f"  {j}: {teams['teams'][i]['tasks'][j]}\n"
-        reply_keyboard += [str(j)]
-    update.message.reply_text(tasks, )
-
-    return ""    
+    print(tasks_string)
+    return ConversationHandler.END  

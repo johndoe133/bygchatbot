@@ -52,12 +52,12 @@ def add_description(update, context):
     #setup for choose group
     with open('teams.json') as json_file:
         teams = json.load(json_file)
-    team_names = "<u>Teams:</u> \n"
+    team_names = "<u>Groups:</u> \n"
     reply_keyboard = []
     for i in range(len(teams["teams"])):
         team_names += f"  {i}: {teams['teams'][i]['group_name']}\n"
         reply_keyboard += [str(i)]
-    update.message.reply_text(team_names, )
+    update.message.reply_text(team_names)
 
     update.message.reply_text("Which group would you like to assign this task to? ",
     reply_markup=ReplyKeyboardMarkup([reply_keyboard], one_time_keyboard=True))

@@ -2,35 +2,23 @@
     "teams": [
         {
             "group_name": "1",
-            "group_id": 9,
-            "group_members": [],
+            "group_id": 1,
+            "group_members": [
+                "Adam Beilin"
+            ],
             "tasks": [],
             "descriptions": []
         },
         {
             "group_name": "2",
-            "group_id": 10,
+            "group_id": 2,
             "group_members": [],
-            "tasks": [],
-            "descriptions": []
+            "tasks": ["hey"],
+            "descriptions": ["heyyyyy"]
         },
         {
             "group_name": "3",
-            "group_id": 11,
-            "group_members": [],
-            "tasks": [],
-            "descriptions": []
-        },
-        {
-            "group_name": "4",
-            "group_id": 12,
-            "group_members": [],
-            "tasks": [],
-            "descriptions": []
-        },
-        {
-            "group_name": "5",
-            "group_id": 13,
+            "group_id": 3,
             "group_members": [],
             "tasks": [],
             "descriptions": []

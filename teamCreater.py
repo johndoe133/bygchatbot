@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 # states:
 #create team
 #
-NUMBER_GROUPS,NAME_GROUP,MAKE_GROUP = range(3)
+NUMBER_GROUPS,NAME_GROUP,MAKE_GROUP = range(5,8)
 
 teams ={}
 def create_team(update, context):
