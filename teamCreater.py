@@ -84,7 +84,8 @@ def name_group(update,context):
         "group_name": groupName,
         "group_id": (group_no),
         "group_members" : [],
-        "tasks" : []
+        "tasks" : [],
+        "descriptions": []
 
     })
     group_no += 1

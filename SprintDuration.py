@@ -22,8 +22,6 @@ EDIT_DURATION,CHOOSE_DURATION = range(2)
 def set_duration(update, context):
 
     reply_keyboard = ["Yes", "No"]
-
-
     update.message.reply_text('would you like to edit the duration of the sprint? ', 
     reply_markup=ReplyKeyboardMarkup([reply_keyboard], one_time_keyboard=True))
     return EDIT_DURATION

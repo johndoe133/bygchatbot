@@ -34,7 +34,7 @@ def join_team(update, context):
     update.message.reply_text(team_names, )
 
     logger.info('user %s wants to join a teams', update.message.from_user.name)
-    update.message.reply_text('which team would you like to join?', 
+    update.message.reply_text('which group would you like to join?', 
     reply_markup=ReplyKeyboardMarkup([reply_keyboard], one_time_keyboard=True))
 
     return CHOOSE_TEAM

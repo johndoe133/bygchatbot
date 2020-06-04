@@ -13,6 +13,9 @@ from teamCreater import *
 from teamJoiner import *
 from team_viewer import *
 from SprintDuration import *
+from assignTask import *
+from removeTask import *
+from viewTask import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -103,8 +106,35 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    conv_handler_assign_task = ConversationHandler(
+        entry_points=[CommandHandler('assigntask', assign_task)],
+        states = {
+            ADD_TASK: [MessageHandler(Filters.regex(''), add_task)],
+            ADD_DESCRIPTION: [MessageHandler(Filters.regex(''), add_description)],
+            TO_GROUP: [MessageHandler(Filters.regex(''), to_group)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    conv_handler_remove_task = ConversationHandler(
+        entry_points=[CommandHandler('removetask', remove_task)],
+        states = {
+            FROM_GROUP: [MessageHandler(Filters.regex(''), from_group)],
+            CHOOSE_TASK: [MessageHandler(Filters.regex(''), choose_task)],
+            CONFIRM: [MessageHandler(Filters.regex(''), confirm)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+    
+
+    conv_handler_view_task = ConversationHandler(
+        entry_points=[CommandHandler('viewtasks', view_task)],
+        states = {},
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
 
     
+
 
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
@@ -114,6 +144,10 @@ def main():
     dp.add_handler(conv_handler_join_team)
     dp.add_handler(conv_handler_view_teams)
     dp.add_handler(conv_handler_sprint_duration)
+    dp.add_handler(conv_handler_assign_task)
+    dp.add_handler(conv_handler_remove_task)
+    dp.add_handler(conv_handler_view_task)
+
 
 
 
