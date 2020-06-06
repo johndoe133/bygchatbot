@@ -152,7 +152,9 @@ def main():
 
             EDIT_DURATION: [MessageHandler(Filters.regex(''), edit_duration)],
             CHOOSE_DURATION: [MessageHandler(Filters.regex(''), choose_duration)],
-            
+            CHOOSE_FIRST: [MessageHandler(Filters.regex(''), choose_first)],
+            CHOOSE_TIME: [MessageHandler(Filters.regex(''), choose_time)],
+
             ADD_TASK: [MessageHandler(Filters.regex(''), add_task)],
             ADD_DESCRIPTION: [MessageHandler(Filters.regex(''), add_description)],
             TO_GROUP: [MessageHandler(Filters.regex(''), to_group)],

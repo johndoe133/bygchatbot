@@ -80,6 +80,7 @@ def name_group(update,context):
     print(groupName)
     update.message.reply_text(f"Group {group_no}\'s name is {groupName}")
     teams['sprint_duration'] = 1
+    teams['first_sprint'] = ""
     teams['teams'].append({
         "group_name": groupName,
         "group_id": (group_no),

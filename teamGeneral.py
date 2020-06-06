@@ -33,7 +33,9 @@ def team_start(update, context):
 
     reply_keyboard = [["Create Groups", "View Groups", "Join Group", "Edit Groups"]]
     #Maybe make create groups also have to fix a sprint duration?
+    
     #maybe turn sprint duration from days into date (based on the current date and number of days)
+    
     #change 'edit groups' into 'edit tasks' (since thats what we do) - also implement it
 
     update.message.reply_text("What would you like to do?", 
