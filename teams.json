@@ -3,18 +3,20 @@
         {
             "group_name": "1",
             "group_id": 1,
-            "group_members": [
-                "Adam Beilin"
+            "group_members": [],
+            "tasks": [
+                "/teamstart"
             ],
-            "tasks": [],
-            "descriptions": []
+            "descriptions": [
+                "lol"
+            ]
         },
         {
             "group_name": "2",
             "group_id": 2,
             "group_members": [],
-            "tasks": ["hey"],
-            "descriptions": ["heyyyyy"]
+            "tasks": [],
+            "descriptions": []
         },
         {
             "group_name": "3",
@@ -22,7 +24,16 @@
             "group_members": [],
             "tasks": [],
             "descriptions": []
+        },
+        {
+            "group_name": "4",
+            "group_id": 4,
+            "group_members": [
+                "Adam Beilin"
+            ],
+            "tasks": [],
+            "descriptions": []
         }
     ],
-    "sprint_duration": 1
+    "sprint_duration": 100000000000000000000000000000000
 }

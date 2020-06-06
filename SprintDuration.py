@@ -17,7 +17,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-EDIT_DURATION,CHOOSE_DURATION = range(2)
+EDIT_DURATION,CHOOSE_DURATION = range(9,11)
 
 def set_duration(update, context):
 

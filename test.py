@@ -141,15 +141,25 @@ def main():
         states = {
             GET_RESPONSE: [MessageHandler(Filters.regex(''), get_response)],
             CHECK_OVERWRITE: [MessageHandler(Filters.regex(''), check_overwrite)],
-            EDIT_GROUPS: [MessageHandler(Filters.regex(''), view_team)],
+            EDIT_GROUPS: [MessageHandler(Filters.regex(''), edit_groups)],
             CHOOSE_TEAM: [MessageHandler(Filters.regex(''), choose_team)],
 
             NUMBER_GROUPS: [MessageHandler(Filters.regex(''), number_groups)],
             NAME_GROUP: [MessageHandler(Filters.regex(''), name_group)],
             MAKE_GROUP: [MessageHandler(Filters.regex(''), make_group)],
 
-            DETAILED_VIEW: [MessageHandler(Filters.regex(''), detailed_view)]
+            DETAILED_VIEW: [MessageHandler(Filters.regex(''), detailed_view)],
 
+            EDIT_DURATION: [MessageHandler(Filters.regex(''), edit_duration)],
+            CHOOSE_DURATION: [MessageHandler(Filters.regex(''), choose_duration)],
+            
+            ADD_TASK: [MessageHandler(Filters.regex(''), add_task)],
+            ADD_DESCRIPTION: [MessageHandler(Filters.regex(''), add_description)],
+            TO_GROUP: [MessageHandler(Filters.regex(''), to_group)],
+
+            FROM_GROUP: [MessageHandler(Filters.regex(''), from_group)],
+            CHOOSE_TASK: [MessageHandler(Filters.regex(''), choose_task)],
+            CONFIRM: [MessageHandler(Filters.regex(''), confirm)]            
             
         },
         fallbacks=[CommandHandler('cancel', cancel)]

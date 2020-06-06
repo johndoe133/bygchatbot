@@ -18,7 +18,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-ADD_TASK, ADD_DESCRIPTION, TO_GROUP = range(3)
+ADD_TASK, ADD_DESCRIPTION, TO_GROUP = range(11,14)
 
 
 

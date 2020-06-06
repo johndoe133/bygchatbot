@@ -41,9 +41,9 @@ def view_team(update, context):
 def detailed_view(update,context):
 
     choice = update.message.text
+    teams = getJson('teams.json')
 
     if (choice == "All"):
-        teams = getJson('teams.json')
         view_string = "<code>"
         view_string += f"{'Sprint duration':<18}: {teams['sprint_duration']}\n"
         view_string += f'{"Groups":<18}:\n'
@@ -56,15 +56,17 @@ def detailed_view(update,context):
                 view_string += f'    Empty\n'
             for member in team['group_members']:
                 view_string += f'    @{member}\n'
-            view_string += f'{"  Group tasks":<18}'
+            view_string += f'{"  Group tasks":<18}:\n'
             if (len(team['tasks'])==0):
                 view_string += f'    Empty\n'
             
             for i in range(len(team['tasks'])):
+                if (i>0):
+                    view_string+="\n"
                 task = team["tasks"][i]
                 description = team["descriptions"][i]
-                view_string += "  "+task + "\n"
-                view_string += "  "+description + "\n"
+                view_string += "    "+task + "\n"
+                view_string += "     "+description + "\n"
             view_string += '  ' + '-'*10
         view_string = view_string.strip('-')
         view_string = view_string.strip(' ')
@@ -72,6 +74,41 @@ def detailed_view(update,context):
         
         view_string += '</code>'
         update.message.reply_text(view_string)
+    
+    elif (choice in [str(i) for i in range(len(teams["teams"]))]):
+        choice = int(choice)
+        team = teams["teams"][choice]
+        view_string = "<code>"
+        view_string += f"{'Sprint duration':<18}: {teams['sprint_duration']}\n"
+        view_string += f'\n{"Group number":<18}: {choice}\n'
+        view_string += f'{"Group name":<18}: {teams["teams"][choice]["group_name"]}\n'
+        view_string += '-'*25
+
+        view_string += f'\n{"  Group members":<18}:\n'
+        if (len(team['group_members']) == 0):
+            view_string += f'    Empty\n'
+        for member in team['group_members']:
+            view_string += f'    @{member}\n'
+        view_string += f'{"  Group tasks":<18}:\n'
+        if (len(team['tasks'])==0):
+            view_string += f'    Empty\n'
+        
+        for i in range(len(team['tasks'])):
+            if (i>0):
+                view_string+="\n"
+            task = team["tasks"][i]
+            description = team["descriptions"][i]
+            view_string += "    "+task + "\n"
+            view_string += "     "+description + "\n"
+        view_string += '  ' + '-'*10
+
+        view_string = view_string.strip('-')
+        view_string = view_string.strip(' ')
+        view_string += '-' * 25
+        
+        view_string += '</code>'
+        update.message.reply_text(view_string)
+
 
 
 
