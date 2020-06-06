@@ -11,6 +11,7 @@ from files import *
 from AgileHelp import *
 from define import *
 from teamCreater import *
+from viewTask import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -18,21 +19,21 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-FROM_GROUP, CHOOSE_TASK, CONFIRM = range(3)
+FROM_GROUP, CHOOSE_TASK, CONFIRM = range(14,17)
 
 
 def remove_task(update, context):
 
     #setup for choose group
     global teams
+
+    view_task(update, context)
+
     with open('teams.json') as json_file:
         teams = json.load(json_file)
-    team_names = "<u>Groups:</u> \n"
     reply_keyboard = []
     for i in range(len(teams["teams"])):
-        team_names += f"  {i}: {teams['teams'][i]['group_name']}\n"
         reply_keyboard += [str(i)]
-    update.message.reply_text(team_names, )
 
     update.message.reply_text("From which group would you like to remove a task?",
     reply_markup=ReplyKeyboardMarkup([reply_keyboard], one_time_keyboard=True))

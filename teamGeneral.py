@@ -14,6 +14,7 @@ from define import *
 from teamCreater import *
 from team_viewer import *
 from teamJoiner import *
+
 from SprintDuration import *
 from assignTask import *
 from removeTask import *
@@ -30,7 +31,12 @@ GET_RESPONSE,CHECK_OVERWRITE, EDIT_GROUPS = range(3)
 
 def team_start(update, context):
 
-    reply_keyboard = [["Create Groups", "View Groups", "Edit Groups", "Join Group"]]
+    reply_keyboard = [["Create Groups", "View Groups", "Join Group", "Edit Groups"]]
+    #Maybe make create groups also have to fix a sprint duration?
+    
+    #maybe turn sprint duration from days into date (based on the current date and number of days)
+    
+    #change 'edit groups' into 'edit tasks' (since thats what we do) - also implement it
 
     update.message.reply_text("What would you like to do?", 
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
@@ -53,11 +59,14 @@ def get_response(update, context):
     elif (option == "View Groups"):
         return view_team(update, context)
     elif (option == "Edit Groups"):
+        reply_keyboard = [["Change Sprint Duration","View Tasks", "Assign Task", "Remove Task"]]
+        update.message.reply_text("What would you like to do?",
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
         return EDIT_GROUPS
     elif (option == "Join Group"):
         return join_team(update, context)
 
-    update.message.reply_text("heyy whats up yo")
+    update.message.reply_text("Invalid Option")
 
     return ConversationHandler.END  
 
@@ -72,7 +81,24 @@ def check_overwrite(update,context):
 
     return create_team(update, context)
 
+def edit_groups(update, context):
+    
+    option = update.message.text
+    print(option)
+    
+    if (option == "Change Sprint Duration"):
+        return set_duration(update, context)
+    elif (option == "View Tasks"):
+        return view_task(update, context)
+    elif (option == "Assign Task"):
+        return assign_task(update,context)
+    elif (option == "Remove Task"):
+        return remove_task(update, context)
 
+    update.message.reply_text("Invalid Option")
+
+    return ConversationHandler.END  
+    
 
 
 

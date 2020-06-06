@@ -29,11 +29,11 @@ def request_file(update, context):
     chat_id = update.message.chat_id
     if (response == 'Image'):
         logger.info("User %s wishes to upload an image", user.first_name)
-        update.message.reply_text("Send an image file to me")
+        update.message.reply_text("Send an image file to me, if you would like to cancel type 'cancel'")
         return GET_IMAGE
     elif (response.lower() == 'beats'):
         logger.info("User %s wishes to upload beats", user.first_name)
-        update.message.reply_text("Send a .json file to me")
+        update.message.reply_text("Send a .json file to me, if you would like to cancel type 'cancel'")
         return GET_BEATS
     else:
         return ConversationHandler.END
@@ -44,16 +44,21 @@ def get_image(update, context):
     logger.info('User %s is requested to send image', user.first_name)
 
     chat_id = update.message.chat_id
-       
-    file_id = update.message.photo[-1].file_id
-    base_url = 'https://api.telegram.org/bot'
-    with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
-        data = json.loads(obj.read())
-    f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
-    open('image.jpg','wb').write(f.content)
-    logger.info('Image successfully acquired from %s', user.first_name)
-    update.message.reply_text("Image acquired!")
-    return ConversationHandler.END
+    try:   
+        file_id = update.message.photo[-1].file_id
+        base_url = 'https://api.telegram.org/bot'
+        with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
+            data = json.loads(obj.read())
+        f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
+        open('image.jpg','wb').write(f.content)
+        logger.info('Image successfully acquired from %s', user.first_name)
+        update.message.reply_text("Image acquired!")
+        return ConversationHandler.END
+    except:
+        logger.info('Failed to acquire image from %s', user.first_name)
+        update.message.reply_text("File was not an image, type /sendfile to try again")
+        return ConversationHandler.END
+
 
 def get_beats(update, context):
     #logging
