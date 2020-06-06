@@ -31,9 +31,13 @@
             "group_members": [
                 "Adam Beilin"
             ],
-            "tasks": [],
-            "descriptions": []
+            "tasks": [
+                "/teamstart"
+            ],
+            "descriptions": [
+                "descrion yes"
+            ]
         }
     ],
-    "sprint_duration": 100000000000000000000000000000000
+    "sprint_duration": 100
 }
