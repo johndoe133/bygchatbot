@@ -115,7 +115,7 @@ def validate_beats(obj):
     try:
         validate(instance=obj, schema=beats_schema)
     except jsonschema.exceptions.ValidationError as err:
-        return "type error"
+        return "format/type error"
     if (check_team_duplicates(obj)):
         return "duplicate team"
     elif (check_id_duplicates(obj)):

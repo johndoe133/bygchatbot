@@ -163,5 +163,6 @@ def cancel(update, context):
 def error(update, context):
     """Log Errors caused by Updates."""
     update.message.reply_text('Oops! Looks like I ran into an error there.')
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
+    logger.warning('Error %s', context.error)
+    return ConversationHandler.END
 

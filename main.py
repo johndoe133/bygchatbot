@@ -9,6 +9,14 @@ from info import *
 from files import *
 from AgileHelp import *
 from define import *
+from teamCreater import *
+from teamJoiner import *
+from team_viewer import *
+from SprintDuration import *
+from assignTask import *
+from removeTask import *
+from viewTask import *
+from teamGeneral import *
 from ifc import *
 
 # Enable logging
@@ -24,6 +32,7 @@ def main():
     # Post version 12 this will no longer be necessary
     defaults = Defaults(parse_mode=ParseMode.HTML)
     updater = Updater(token, use_context=True, defaults=defaults)
+    
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -59,9 +68,90 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    # conv_handler_create_json = ConversationHandler(
+    #     entry_points=[CommandHandler('createteam', create_team)],
+    #     states = {
+    #         NUMBER_GROUPS: [MessageHandler(Filters.regex(''), number_groups)],
+    #         NAME_GROUP: [MessageHandler(Filters.regex(''), name_group)],
+    #         MAKE_GROUP: [MessageHandler(Filters.regex(''), make_group)]
+    #     },
+    #     fallbacks=[CommandHandler('cancel', cancel)]
+    # )
+
+    # conv_handler_join_team = ConversationHandler(
+    #     entry_points=[CommandHandler('jointeam', join_team)],
+    #     states = {
+    #         CHOOSE_TEAM: [MessageHandler(Filters.regex(''), choose_team)],
+    #         ADD_TO_TEAM: [MessageHandler(Filters.regex(''), add_to_team)]
+    #     },
+    #     fallbacks=[CommandHandler('cancel', cancel)]
+    # )
+
     conv_handler_define = ConversationHandler(
         entry_points=[CommandHandler('define', give_def_direct)],
         states = {},
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    # conv_handler_view_teams = ConversationHandler(
+    #     entry_points=[CommandHandler('view_teams', view_team)],
+    #     states = {},
+    #     fallbacks=[CommandHandler('cancel', cancel)]
+    # )
+    
+    # conv_handler_sprint_duration = ConversationHandler(
+    #     entry_points=[CommandHandler('sprintduration', set_duration)],
+    #     states = {
+    #         EDIT_DURATION: [MessageHandler(Filters.regex(''), edit_duration)],
+    #         CHOOSE_DURATION: [MessageHandler(Filters.regex(''), choose_duration)]
+    #     },
+    #     fallbacks=[CommandHandler('cancel', cancel)]
+    # )
+
+    # conv_handler_assign_task = ConversationHandler(
+    #     entry_points=[CommandHandler('assigntask', assign_task)],
+    #     states = {
+    #         ADD_TASK: [MessageHandler(Filters.regex(''), add_task)],
+    #         ADD_DESCRIPTION: [MessageHandler(Filters.regex(''), add_description)],
+    #         TO_GROUP: [MessageHandler(Filters.regex(''), to_group)]
+    #     },
+    #     fallbacks=[CommandHandler('cancel', cancel)]
+    # )
+
+    # conv_handler_remove_task = ConversationHandler(
+    #     entry_points=[CommandHandler('removetask', remove_task)],
+    #     states = {
+    #         FROM_GROUP: [MessageHandler(Filters.regex(''), from_group)],
+    #         CHOOSE_TASK: [MessageHandler(Filters.regex(''), choose_task)],
+    #         CONFIRM: [MessageHandler(Filters.regex(''), confirm)]
+    #     },
+    #     fallbacks=[CommandHandler('cancel', cancel)]
+    # )
+    
+
+    # conv_handler_view_task = ConversationHandler(
+    #     entry_points=[CommandHandler('viewtasks', view_task)],
+    #     states = {},
+    #     fallbacks=[CommandHandler('cancel', cancel)]
+    # )
+
+
+    conv_handler_team_general = ConversationHandler(
+        entry_points=[CommandHandler('teamstart', team_start)],
+        states = {
+            GET_RESPONSE: [MessageHandler(Filters.regex(''), get_response)],
+            CHECK_OVERWRITE: [MessageHandler(Filters.regex(''), check_overwrite)],
+            EDIT_GROUPS: [MessageHandler(Filters.regex(''), view_team)],
+            CHOOSE_TEAM: [MessageHandler(Filters.regex(''), choose_team)],
+
+            NUMBER_GROUPS: [MessageHandler(Filters.regex(''), number_groups)],
+            NAME_GROUP: [MessageHandler(Filters.regex(''), name_group)],
+            MAKE_GROUP: [MessageHandler(Filters.regex(''), make_group)],
+
+            DETAILED_VIEW: [MessageHandler(Filters.regex(''), detailed_view)]
+
+            
+        },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
@@ -75,6 +165,14 @@ def main():
     dp.add_handler(conv_handler_file)
     dp.add_handler(conv_handler_agile_help)
     dp.add_handler(conv_handler_define)
+    #dp.add_handler(conv_handler_create_json)
+    #dp.add_handler(conv_handler_join_team)
+    # dp.add_handler(conv_handler_view_teams)
+    # dp.add_handler(conv_handler_sprint_duration)
+    # dp.add_handler(conv_handler_assign_task)
+    # dp.add_handler(conv_handler_remove_task)
+    # dp.add_handler(conv_handler_view_task)
+    dp.add_handler(conv_handler_team_general)
     dp.add_handler(conv_handler_ifc)
 
     # log all errors
