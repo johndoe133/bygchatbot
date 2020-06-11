@@ -1,4 +1,4 @@
-from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight, 
+from beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
 import json
@@ -8,7 +8,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
 
 from info import *
 from files import *
-from AgileHelp import *
+from agile_help import *
 from define import *
 from teamCreater import *
 

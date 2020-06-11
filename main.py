@@ -1,26 +1,26 @@
 import sys
 sys.path.append('C:/Users/erick/Documents/GitHub/bygchatbot/Modules')
 
-from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight, 
+from Modules.beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
 import json
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler, Defaults)
-from info import *
-from files import *
-from AgileHelp import *
-from define import *
-from teamCreater import *
-from teamJoiner import *
-from team_viewer import *
-from SprintDuration import *
-from assignTask import *
-from removeTask import *
-from viewTask import *
-from teamGeneral import *
-from ifc import *
+from Modules.info import *
+from Modules.files import *
+from Modules.agile_help import *
+from Modules.define import *
+from Modules.teamCreater import *
+from Modules.teamJoiner import *
+from Modules.team_viewer import *
+from Modules.SprintDuration import *
+from Modules.assignTask import *
+from Modules.removeTask import *
+from Modules.viewTask import *
+from Modules.teamGeneral import *
+from Modules.ifc import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -30,17 +30,18 @@ logger = logging.getLogger(__name__)
 
 def main():
     logger.info('Bot is started')
+
+    # Make default parse mode HTML
+    defaults = Defaults(parse_mode=ParseMode.HTML)
+
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    defaults = Defaults(parse_mode=ParseMode.HTML)
     updater = Updater(token, use_context=True, defaults=defaults)
     
-
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
-    # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
     conv_handler_info = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={

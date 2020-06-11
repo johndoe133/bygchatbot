@@ -1,34 +1,33 @@
 {
     "teams": [
         {
-            "group_name": "group1",
+            "group_name": "a",
             "group_id": 1,
             "group_members": [],
-            "tasks": [],
-            "descriptions": []
+            "tasks": [
+                "ADd a task"
+            ],
+            "descriptions": [
+                "description"
+            ]
         },
         {
-            "group_name": "group2",
+            "group_name": "b",
             "group_id": 2,
-            "group_members": [],
+            "group_members": [
+                "Eric Kastl Jensen"
+            ],
             "tasks": [],
             "descriptions": []
         },
         {
-            "group_name": "group3",
+            "group_name": "c",
             "group_id": 3,
-            "group_members": [],
-            "tasks": [],
-            "descriptions": []
-        },
-        {
-            "group_name": "group4",
-            "group_id": 4,
             "group_members": [],
             "tasks": [],
             "descriptions": []
         }
     ],
-    "sprint_duration": 12,
-    "first_sprint": "2020-06-07 18:12:00"
+    "sprint_duration": 1,
+    "first_sprint": ""
 }

@@ -1,4 +1,4 @@
-from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight, 
+from beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
 import json
@@ -12,7 +12,7 @@ from queue import PriorityQueue
 
 from info import *
 from files import *
-from AgileHelp import *
+from agile_help import *
 from define import *
 from teamCreater import *
 

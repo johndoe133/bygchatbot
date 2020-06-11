@@ -1,4 +1,4 @@
-from chatbot import (token)
+from beats import (token)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
@@ -191,4 +191,6 @@ def give_definition(word, update):
         'performance during the next sprint.')
         update.message.reply_text('For more information, click the following link\n'
         'https://en.wikipedia.org/wiki/Scrum_(software_development)#Sprint_Retrospective')
+    else:
+        update.message.reply_test("Oops! Looks like I don't recognize that word...")
 

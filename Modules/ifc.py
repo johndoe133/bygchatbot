@@ -1,4 +1,4 @@
-from chatbot import (token)
+from beats import (token)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
@@ -6,7 +6,7 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 from telegram import ParseMode
 from info import cancel
-from chatbot import getJson
+from beats import getJson
 
 def start_analysis(update, context):
     json_obj = getJson('duplex_A.json')

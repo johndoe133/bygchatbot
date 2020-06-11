@@ -1,4 +1,4 @@
-from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight, 
+from beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
 import json

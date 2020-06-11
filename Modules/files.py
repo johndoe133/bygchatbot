@@ -3,7 +3,7 @@ import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
-from chatbot import token, getJson
+from beats import token, getJson
 import requests, urllib.request
 import jsonschema
 from jsonschema import validate

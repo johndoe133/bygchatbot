@@ -1,11 +1,11 @@
-from chatbot import (token)
+from beats import (token)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 from telegram import ParseMode
-from AgileHelp import give_definition
+from agile_help import give_definition
 from uuid import uuid4
 
 def get_word(update):

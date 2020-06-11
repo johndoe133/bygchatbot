@@ -1,11 +1,11 @@
-from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight, 
+from beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
-from chatbot import getJson
+from beats import getJson
 
 DETAILED_VIEW = 8
 
