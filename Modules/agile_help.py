@@ -192,5 +192,5 @@ def give_definition(word, update):
         update.message.reply_text('For more information, click the following link\n'
         'https://en.wikipedia.org/wiki/Scrum_(software_development)#Sprint_Retrospective')
     else:
-        update.message.reply_test("Oops! Looks like I don't recognize that word...")
+        update.message.reply_text("Oops! Looks like I don't recognize that word...")
 
