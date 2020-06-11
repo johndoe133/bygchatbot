@@ -1,3 +1,6 @@
+import sys
+sys.path.append('C:/Users/erick/Documents/GitHub/bygchatbot/Modules')
+
 from chatbot import (token, get, getBuildingFloorArea, getBuildingHeight, 
                     getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
 import logging
