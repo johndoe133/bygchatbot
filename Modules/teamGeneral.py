@@ -6,19 +6,19 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
-from info import *
-from files import *
-from agile_help import *
-from define import *
+from Modules.info import *
+from Modules.files import *
+from Modules.agile_help import *
+from Modules.define import *
 
-from teamCreater import *
-from team_viewer import *
-from teamJoiner import *
+from Modules.teamCreater import *
+from Modules.team_viewer import *
+from Modules.teamJoiner import *
 
-from SprintDuration import *
-from assignTask import *
-from removeTask import *
-from viewTask import *
+from Modules.SprintDuration import *
+from Modules.assignTask import *
+from Modules.removeTask import *
+from Modules.viewTask import *
 
 
 # Enable logging
@@ -47,7 +47,6 @@ def team_start(update, context):
 def get_response(update, context):
 
     option = update.message.text
-    print(option)
 
 
     if (option == "Create Groups"):
@@ -84,7 +83,6 @@ def check_overwrite(update,context):
 def edit_groups(update, context):
     
     option = update.message.text
-    print(option)
     
     if (option == "Change Sprint Duration"):
         return set_duration(update, context)

@@ -25,7 +25,7 @@ def join_team(update, context):
     global teams
     with open('teams.json') as json_file:
         teams = json.load(json_file)
-    print("joining team, testing number: "+ str(counter))
+    logger.info(f"{update.message.from_user.name} is joining team number "+ str(counter))
     team_names = "<u>Teams:</u> \n"
     reply_keyboard = []
     for i in range(len(teams["teams"])):
@@ -50,7 +50,7 @@ def choose_team(update, context):
     except:
         update.message.reply_text('Invalid number')
     team_name = teams['teams'][team_no]['group_name']
-    print("joining team "+ team_name)
+    logger.info(f"{udpate.message.from_user.name} is joining team "+ team_name)
     
     for j in range(len(teams["teams"])):
         try:

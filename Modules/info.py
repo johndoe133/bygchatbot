@@ -148,7 +148,6 @@ def give_info(update, context):
         reply_markup=ReplyKeyboardRemove())
     elif (METRIC == 'Cancel'):
         return ConversationHandler.END
-    print('ended conversation')
     return ConversationHandler.END
 
 def cancel(update, context):

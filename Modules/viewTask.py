@@ -39,5 +39,4 @@ def view_task(update, context):
     update.message.reply_text(tasks_string)
 
 
-    print(tasks_string)
     return ConversationHandler.END  

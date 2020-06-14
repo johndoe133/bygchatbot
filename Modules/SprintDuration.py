@@ -27,7 +27,7 @@ EDIT_DURATION,CHOOSE_DURATION,CHOOSE_FIRST,CHOOSE_TIME = range(40,44)
 def set_duration(update, context):
 
     reply_keyboard = ["Yes", "No"]
-    update.message.reply_text('would you like to edit the duration of the sprint? ', 
+    update.message.reply_text('Would you like to edit the duration of the sprint? ', 
     reply_markup=ReplyKeyboardMarkup([reply_keyboard], one_time_keyboard=True))
     return EDIT_DURATION
 
@@ -39,7 +39,6 @@ def edit_duration(update,context):
     user = update.message.from_user
     confirm = update.message.text
 
-    print(confirm)
 
     if (confirm == "Yes"):
         update.message.reply_text("Choose the length of the sprint (number of days)")
@@ -94,7 +93,7 @@ def choose_time(update, context):
         return ConversationHandler.END
 
 
-    update.message.reply_text("Type the date that you want the first sprint meeting to be. Use the format DD.MM.YYYY")
+    update.message.reply_text("Type the date that you want the first sprint meeting to be. Use the format <code>DD.MM.YYYY</code>")
     
     return CHOOSE_FIRST
 
@@ -117,8 +116,6 @@ def choose_first(update, context):
     timezone = pytz.timezone("Europe/Amsterdam")
     d_aware = timezone.localize(date)
 
-    print ("chosen date: ",date)
-    print("current date: ",datetime.now())
     if (date < datetime.now()):
         update.message.reply_text("The sprint meeting must be start in the future, type /teamstart to try again")
         return ConversationHandler.END
@@ -142,14 +139,9 @@ def choose_first(update, context):
         context.job_queue.run_repeating(reminder_day_before, duration*24*60*60, first=d_aware-timedelta(days=1), context=update.message.chat_id)
     if (date - timedelta(hours=1) > datetime.now()):
         context.job_queue.run_repeating(reminder_hour_before, duration*24*60*60, first=d_aware-timedelta(hours=1), context=update.message.chat_id)
-    print(len(context.job_queue._queue.queue))
-
-    print("--\n--\n")
-    print(context.chat_data)
-    # if 'job' in context.chat_data:
-    #     old_job = context.chat_data['job']
-    #     old_job.schedule_removal()
     
+    update.message.reply_text(f'Success! Your sprint has been set to be once every {duration} days, starting on {d_aware}')
+
     return ConversationHandler.END
 
 
