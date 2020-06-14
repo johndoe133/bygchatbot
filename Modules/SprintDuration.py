@@ -39,7 +39,6 @@ def edit_duration(update,context):
     user = update.message.from_user
     confirm = update.message.text
 
-    print(confirm)
 
     if (confirm == "Yes"):
         update.message.reply_text("Choose the length of the sprint (number of days)")
@@ -117,8 +116,6 @@ def choose_first(update, context):
     timezone = pytz.timezone("Europe/Amsterdam")
     d_aware = timezone.localize(date)
 
-    print ("chosen date: ",date)
-    print("current date: ",datetime.now())
     if (date < datetime.now()):
         update.message.reply_text("The sprint meeting must be start in the future, type /teamstart to try again")
         return ConversationHandler.END

@@ -33,9 +33,6 @@ def create_team(update, context):
     chat_id = update.message.chat_id
 
     user = update.message.from_user
-    print('You talk with user {} and his user ID: {} '.format(user['username'], user['id']))
-    print(user)
-
     logger.info('user %s wants to update teams', update.message.from_user.name)
     
     #with open('testjson2.json', 'w') as outfile:
@@ -54,7 +51,6 @@ def number_groups(update,context):
     counter = update.message.text
     
     logger.info('user %s wants to create %s teams', user.name, counter)
-    print(1)
     try: 
         counter = int(counter)-1
         update.message.reply_text(f'Write group {group_no}\'s group name')
@@ -68,16 +64,13 @@ def number_groups(update,context):
 
         
 def name_group(update,context):
-    print(4)
     global counter
     global teams
     global group_no
     #user = update.message.from_user
     #logger.info('user %s is now naming %s teams', user.name, number)
     
-    print(5)
     groupName = update.message.text
-    print(groupName)
     update.message.reply_text(f"Group {group_no}\'s name is {groupName}")
     teams['sprint_duration'] = 1
     teams['first_sprint'] = ""
@@ -92,17 +85,14 @@ def name_group(update,context):
     group_no += 1
 
     if (counter <= 0):
-        print(teams)
         with open('teams.json', 'w') as outfile:
             json.dump(teams, outfile, indent = 4)
         return ConversationHandler.END 
     else:
         counter-=1
-        print(6)
         update.message.reply_text(f"Write group {group_no}\'s group name")
         return NAME_GROUP
         #name_group(update,context)
-        print("we're done here")    
 
 
 

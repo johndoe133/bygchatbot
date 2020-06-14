@@ -47,7 +47,6 @@ def team_start(update, context):
 def get_response(update, context):
 
     option = update.message.text
-    print(option)
 
 
     if (option == "Create Groups"):
@@ -84,7 +83,6 @@ def check_overwrite(update,context):
 def edit_groups(update, context):
     
     option = update.message.text
-    print(option)
     
     if (option == "Change Sprint Duration"):
         return set_duration(update, context)

@@ -31,10 +31,6 @@ def getArgs(update):
 
 def get(bot, update):
     chat_id = update.message.chat_id
-    # bot.send_message(chat_id=chat_id, text=getAllInfo())
-    # sent = bot.send_message(chat_id=chat_id, text="Input an integer:")
-    # bot.register_next_step_handler(sent, getAllInfo)
-    # print(update.message.text)
     args = getArgs(update)
     bot.send_message(chat_id=chat_id, text=getInfo(args))
 
@@ -65,8 +61,6 @@ token = getJson('token.json')['token']
 def getHeight(team_index, segment_index):
     json_obj = getJson('beats.json')
     f2f = float(json_obj[team_index]['segments'][segment_index]['f2f'])
-    print(team_index)
-    print(segment_index)
     flrs = int(json_obj[team_index]['segments'][segment_index]['flrs'])
     return f2f * flrs
 
@@ -95,9 +89,6 @@ def getBuildingVolume(bot, update):
     chat_id = update.message.chat_id
     args = getArgs(update)
     bot.send_message(chat_id=chat_id, text=getVolume(int(args[0])))
-
-def download_file(bot, update):
-    print(update.message)
 
 
 #how to get this value in teamcreater?
