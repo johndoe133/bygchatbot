@@ -171,8 +171,11 @@ def main():
     )
 
     conv_handler_ifc = ConversationHandler(
-        entry_points=[CommandHandler('ifc', start_analysis)],
-        states = {},
+        entry_points=[CommandHandler('ifc', ifc_start)],
+        states = {
+            GET_IFC_RESPONSE: [MessageHandler(Filters.regex(''), get_ifc_response)],
+            GET_STRETCH_PARAMETERS: [MessageHandler(Filters.regex(''), get_stretch_parameters)]
+        },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
