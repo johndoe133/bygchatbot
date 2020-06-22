@@ -5,13 +5,12 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 from telegram import ParseMode
-from Modules.info import cancel
-from Modules.beats import getJson
+from info import cancel
+from beats import getJson
 import re
 import numpy as np
 from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import open3d as o3d
 from plyfile import PlyData, PlyElement
 import os
@@ -70,6 +69,7 @@ def get_min_height(obj):
 
 def get_mesh(all_points, all_triangles):
     vertices = np.array(all_points, dtype=[('x', 'f4'), ('y', 'f4'),('z', 'f4')])
+    print(vertices[0:10])
     faces = np.array(all_triangles,
     dtype=[('vertex_indices', 'i4', (3,)),('red', 'u1'), ('green', 'u1'),('blue', 'u1')])
 
@@ -227,5 +227,5 @@ def start_analysis(update, context):
                 if 'Volume' in item.keys():
                     classes[class_name]['Volume'] += item['Volume']
     update.message.reply_text(classes)
-    return ConversationHandler.END    
+    return ConversationHandler.END
 
