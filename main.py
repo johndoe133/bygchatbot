@@ -21,6 +21,7 @@ from Modules.removeTask import *
 from Modules.viewTask import *
 from Modules.teamGeneral import *
 from Modules.ifc import *
+from Modules.file_management import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -58,6 +59,9 @@ def main():
             REQUEST_FILE: [MessageHandler(Filters.all, request_file)],
             GET_IMAGE: [MessageHandler(Filters.all, get_image)],
             GET_BEATS: [MessageHandler(Filters.all, get_beats)],
+            GET_IFC: [MessageHandler(Filters.all, get_ifc)],
+            GET_NAME: [MessageHandler(Filters.all, get_name)],
+            GET_DESCRIPTION: [MessageHandler(Filters.all, get_description)]
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )
@@ -179,6 +183,15 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    conv_handler_file_management = ConversationHandler(
+        entry_points=[CommandHandler('filemanage', show_what)],
+        states = {
+            SHOW: [MessageHandler(Filters.regex(''), show)],
+            SEND_FILE: [MessageHandler(Filters.regex(''), send_file)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
     dp.add_handler(conv_handler_agile_help)
@@ -192,6 +205,8 @@ def main():
     # dp.add_handler(conv_handler_view_task)
     dp.add_handler(conv_handler_team_general)
     dp.add_handler(conv_handler_ifc)
+    dp.add_handler(conv_handler_file_management)
+
 
     # log all errors
     dp.add_error_handler(error)
