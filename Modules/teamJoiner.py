@@ -50,7 +50,7 @@ def choose_team(update, context):
     except:
         update.message.reply_text('Invalid number')
     team_name = teams['teams'][team_no]['group_name']
-    logger.info(f"{udpate.message.from_user.name} is joining team "+ team_name)
+    logger.info(f"{update.message.from_user.name} is joining team "+ team_name)
     
     for j in range(len(teams["teams"])):
         try:

@@ -1,88 +1,114 @@
 import logging
 import json
-from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
+from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, File)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 from beats import token, getJson
 import requests, urllib.request
 import jsonschema
 from jsonschema import validate
+from datetime import datetime
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-REQUEST_FILE, GET_IMAGE, GET_BEATS = range(3)
+REQUEST_FILE, GET_IMAGE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION = range(6)
+
+file_type = ""
+file_id = ""
+file_name = ""
 
 def ask_file_type(update, context):
-    reply_keyboard = [['Image','Beats','Cancel']]
+    reply_keyboard = [['Image','Beats', 'IFC','Cancel']]
     update.message.reply_text("Please select which file type you'd like to send",
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return REQUEST_FILE
 
 def request_file(update, context):
+    global file_type
     #logging
     user = update.message.from_user
 
     response = update.message.text
     chat_id = update.message.chat_id
-    if (response == 'Image'):
-        logger.info("User %s wishes to upload an image", user.first_name)
-        update.message.reply_text("Send an image file to me, if you would like to cancel type 'cancel'")
-        return GET_IMAGE
-    elif (response.lower() == 'beats'):
-        logger.info("User %s wishes to upload beats", user.first_name)
-        update.message.reply_text("Send a .json file to me, if you would like to cancel type 'cancel'")
-        return GET_BEATS
-    else:
+    file_type = response.lower()
+    update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'")
+    return GET_IMAGE
+
+def get_a_file(update, context):
+    if (file_type not in ['image', 'beats', 'ifc']):
         return ConversationHandler.END
 
-def get_image(update, context):
     #logging
     user = update.message.from_user
-    logger.info('User %s is requested to send image', user.first_name)
+    logger.info(f'User {user.first_name} is requested to send {file_type}')
+    global file_id
+    global file_name
+    bot = context.bot
 
     chat_id = update.message.chat_id
-    try:   
-        file_id = update.message.photo[-1].file_id
-        base_url = 'https://api.telegram.org/bot'
-        with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
-            data = json.loads(obj.read())
-        f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
-        open('image.jpg','wb').write(f.content)
-        logger.info('Image successfully acquired from %s', user.first_name)
-        update.message.reply_text("Image acquired!")
-        return ConversationHandler.END
-    except:
+    try:
+        if (file_type == 'image'):
+            file_id = update.message.photo[-1].file_id
+        else:
+            file_id =update.message.document.file_id
+        gen_file = bot.get_file(file_id)
+        gen_file.download()
+        logger.info(f'{file_type} successfully downloaded')
+        file_name = (str(gen_file.file_path).split('/'))[-1]
+        if file_type == 'beats':
+            temp_json = getJson(file_name)
+            valid = (validate_beats(temp_json))
+            if (valid != "valid"):
+                logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
+                update.message.reply_text("Invalid beats file due to " + valid + ", cancelling file upload. Type /sendfile to try again")
+                return ConversationHandler.END
+        update.message.reply_text(f"{file_type[0].upper()}{file_type[1:]} acquired!")
+        update.message.reply_text('Please enter a short title of the file')
+        return GET_NAME
+    except Exception as e:
         logger.info('Failed to acquire image from %s', user.first_name)
-        update.message.reply_text("File was not an image, type /sendfile to try again")
+        logger.info(e)
+        update.message.reply_text(f"File was not a(n) {file_type}, cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
 
-
-def get_beats(update, context):
-    #logging
+def get_name(update, context):
+    global file_type
+    name = update.message.text
     user = update.message.from_user
-    logger.info('User %s is requested to send beats', user.first_name)
+    j = getJson('files.json')
+    if not (file_type in j.keys()):
+        j[file_type] = []
+    counter = 0
+    duplicate = False
+    for item in j[file_type]:
+        if item['name'] == name:
+            duplicate = True
+            update.message.reply_text(f'The file name \'{name}\' is already in use')
+        elif item['name'][:-4] == name:
+            counter += 1
+    if duplicate:
+        update.message.reply_text(f'Uploading file as \'{name} ({counter})\'')
+        name += f" ({counter})"
 
-    chat_id = update.message.chat_id
-    file_id = update.message.document.file_id
-    base_url = 'https://api.telegram.org/bot'
-    with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
-        data = json.loads(obj.read())
-    f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
-    open('temp_beats.json','wb').write(f.content)
-    logger.info('Beats received from %s', user.first_name)
-    temp_json = getJson("temp_beats.json")
-    valid = (validate_beats(temp_json))
-    if (valid == "valid"):
-        open('beats.json','wb').write(f.content)
-        logger.info('Beats successfully acquired from %s', user.first_name)
-        update.message.reply_text("Beats acquired!")
-    else:
-        logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
-        update.message.reply_text("Invalid beats file due to " + valid + ", try again")
+    j[file_type].append({"name":name, "uploaded_by":user.name, "date":str(datetime.now()), 'file_id':file_id, 'file_name':file_name})
+    with open('files.json', 'w') as outfile:
+        json.dump(j, outfile, indent=4)
+
+    update.message.reply_text('Enter a description: ')
+    return GET_DESCRIPTION
+
+def get_description(update, context):
+    desc = update.message.text
+    j = getJson('files.json')
+    j[file_type][-1]['description'] = desc
+    with open('files.json', 'w') as outfile:
+        json.dump(j, outfile, indent=4)
+    update.message.reply_text('File uploaded! View your files with /filemanage')
     return ConversationHandler.END
+    
 
 def validate_beats(obj):
     beats_schema = {
