@@ -1,8 +1,8 @@
 import sys
 sys.path.append('../bygchatbot/Modules')
 
-from Modules.beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
-                    getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
+from Modules.beats import (token, getBuildingFloorArea, getBuildingHeight, 
+                    getJson, getHeight, getVolume, getFloorArea)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
@@ -43,8 +43,9 @@ def main():
 
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
     conv_handler_info = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[CommandHandler('viewbeats', view_beats)],
         states={
+            OVERVIEW: [MessageHandler(Filters.regex(''), overview)],
             TEAM_INFO: [MessageHandler(Filters.regex(''), team_info)],
             SEGMENT_INFO: [MessageHandler(Filters.regex(''), segments_info)],
             GIVE_INFO: [MessageHandler(Filters.regex(''), give_info)],

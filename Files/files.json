@@ -1,0 +1,38 @@
+{
+    "image": [
+        {
+            "name": "graph",
+            "uploaded_by": "Eric Kastl Jensen",
+            "date": "2020-06-30 16:17:05.472100",
+            "file_id": "AgACAgQAAxkBAAITWF77SV8v_BfZxrp0QKP6VIGEOTrOAAIPsTEbwjLZUxzkLieKbCd4I0SUIl0AAwEAAwIAA3kAA_ESBQABGgQ",
+            "file_name": "file_144.jpg",
+            "description": "green"
+        },
+        {
+            "name": "hello",
+            "uploaded_by": "Eric Kastl Jensen",
+            "date": "2020-06-30 16:37:14.239420",
+            "file_id": "AgACAgQAAxkBAAITlF77Thap0pnc1wt8BqALwCfLt_U2AAIXsTEbwjLZU8l432VypBYvlAnfIl0AAwEAAwIAA3gAA2qrAwABGgQ",
+            "file_name": "file_152.jpg",
+            "description": "baby"
+        },
+        {
+            "name": "ekkart",
+            "uploaded_by": "Eric Kastl Jensen",
+            "date": "2020-06-30 16:38:13.833468",
+            "file_id": "AgACAgQAAxkBAAITpl77TlKlsnY7G2njo1bKFy_uD6eiAAIZsTEbwjLZU_NaoLw0wSNT66a0GwAEAQADAgADeQADYl0IAAEaBA",
+            "file_name": "file_153.jpg",
+            "description": "he is my teacher"
+        }
+    ],
+    "beats": [
+        {
+            "name": "beats v0",
+            "uploaded_by": "Eric Kastl Jensen",
+            "date": "2020-06-30 17:05:38.446191",
+            "file_id": "BQACAgQAAxkBAAITxF77VLu4rx3tZzBlpD0EzDHAnKzPAAKtBQACwjLZU5ezm3EvjjsUGgQ",
+            "file_name": "file_156.json",
+            "description": "Initial beats file"
+        }
+    ]
+}

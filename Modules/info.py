@@ -1,10 +1,11 @@
-from beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
-                    getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
+from beats import (token, getJson, getVolume, getVolume, getFloorArea, getHeight)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
+from Modules.file_management import show_all_file_type
+from pathlib import Path
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -12,17 +13,31 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 logger = logging.getLogger(__name__)
 
-TEAM_INFO, SEGMENT_INFO, GIVE_INFO = range(3)
+OVERVIEW, TEAM_INFO, SEGMENT_INFO, GIVE_INFO = range(4)
 TEAM = ""
 TEAM_INDEX = 0
 SEGMENT = ""
 SEGMENT_INDEX = 0
 METRIC = ""
+beats_path = Path('.')
+beats_file_name = ""
 
+def view_beats(update, context):
+    print('-----------------------')
+    j = getJson(Path(Path.cwd()) / 'Files' / 'files.json')
+    update.message.reply_text(show_all_file_type(j, 'beats'))
+    update.message.reply_text('To get an overview of the beats, first select a beats file to view')
+    return OVERVIEW
 
-def start(update, context):
+def overview(update, context):
+    global beats_path
+    global beats_file_name
     reply_keyboard = [[]]
-    json_obj = getJson('beats.json')
+    file_title = update.message.text
+    j = getJson(Path(Path.cwd()) / 'Files' / 'files.json')
+    beats_file_name = [item['file_name'] for item in j['beats'] if item['name'] == file_title][0]
+    beats_path = Path(Path.cwd() / 'Files' / beats_file_name)
+    json_obj = getJson(beats_path)
     json_str = ""
     for i, team in enumerate(json_obj):
         del json_obj[i]['segments']
@@ -52,7 +67,7 @@ def start(update, context):
 
 
 def team_info(update, context):
-    json_obj = getJson('beats.json')
+    json_obj = getJson(beats_path)
     user = update.message.from_user
     global TEAM_INDEX
     TEAM = update.message.text
@@ -95,7 +110,7 @@ def team_info(update, context):
     return SEGMENT_INFO
 
 def segments_info(update, context):
-    json_obj = getJson('beats.json')
+    json_obj = getJson(beats_path)
     user = update.message.from_user
     SEGMENT = update.message.text
     global TEAM_INDEX
@@ -127,7 +142,7 @@ def segments_info(update, context):
 
 def give_info(update, context):
     # get beats.json
-    json_obj = getJson('beats.json')
+    json_obj = getJson(beats_path)
     user = update.message.from_user
 
     # metric desired
@@ -138,13 +153,13 @@ def give_info(update, context):
     global SEGMENT_INDEX
 
     if (METRIC == 'Height'):
-        update.message.reply_text('The height of the building is: ' + str(getHeight(TEAM_INDEX, SEGMENT_INDEX)),
+        update.message.reply_text('The height of the building is: ' + str(getHeight(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
         reply_markup=ReplyKeyboardRemove())
     elif (METRIC == 'Volume'):
-        update.message.reply_text('The volume of the building is: ' + str(getVolume(TEAM_INDEX, SEGMENT_INDEX)),
+        update.message.reply_text('The volume of the building is: ' + str(getVolume(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
         reply_markup=ReplyKeyboardRemove())
     elif (METRIC == 'Floor Area'):
-        update.message.reply_text('The floor area is: ' + str(getFloorArea(TEAM_INDEX, SEGMENT_INDEX)),
+        update.message.reply_text('The floor area is: ' + str(getFloorArea(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
         reply_markup=ReplyKeyboardRemove())
     elif (METRIC == 'Cancel'):
         return ConversationHandler.END

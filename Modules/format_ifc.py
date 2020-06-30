@@ -193,7 +193,6 @@ def stretch_wall(o, r, key_wall, factor):
     for key in r:
         vertices = r[key]['Vertices']
         current_min_z = find_min_z(vertices)
-        # print(f'{current_min_z:.04f}')
         current_max_z = find_max_z(vertices)
         if (current_min_z >= min_z and current_max_z <= max_z):
             shape_rep = r[key]
