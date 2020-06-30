@@ -22,6 +22,11 @@ def show(update ,context):
     file_type = update.message.text
     file_type = file_type.lower()
     j = getJson('files.json')
+
+    if j[file_type] == []:
+        update.message.reply_text('There is currently no files stored for this format \nView other file formats with /filemanage or upload a new file with /sendfile')
+        return ConversationHandler.END
+
     try:
         output = ""
         for file in j[file_type]:
@@ -35,11 +40,16 @@ def show(update ,context):
 
 def send_file(update, context):
     file_name = update.message.text
+    file_name = file_name.lower()
     # send the file to the user
     chat_id = update.message.chat_id
     j = getJson('files.json')[file_type]
-    file_id = [item['file_id'] for item in j if item['name'] == file_name][0]
-    print(file_id)
+    try:
+        file_id = [item['file_id'] for item in j if item['name'].lower() == file_name][0]
+        print(file_id)
+    except:
+        update.message.reply_text('No file with this filename')
+        return ConversationHandler.END
     base_url = 'https://api.telegram.org/bot'
     with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
         data = json.loads(obj.read())
