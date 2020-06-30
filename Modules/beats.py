@@ -29,14 +29,7 @@ def getArgs(update):
     args = update.message.text.partition(' ')[2].split(' ')
     return args
 
-def get(bot, update):
-    chat_id = update.message.chat_id
-    args = getArgs(update)
-    bot.send_message(chat_id=chat_id, text=getInfo(args))
-
-def getInfo(args):
-    
-    json_obj = getJson('beats.json')
+def getInfo(json_obj, args):
     if args[0] == '':
         return json.dumps(json_obj, indent=2)
     prev = json_obj
@@ -47,9 +40,6 @@ def getInfo(args):
             prev = prev[item]
     return json.dumps(prev, indent=2)
 
-def getAllInfo():
-    json_obj = getJson('beats.json')
-    return json.dumps(json_obj, indent=2)
 
 def getJson(filename):
     with open(filename) as json_file:
@@ -58,21 +48,18 @@ def getJson(filename):
 
 token = getJson('token.json')['token']
 
-def getHeight(team_index, segment_index):
-    json_obj = getJson('beats.json')
+def getHeight(json_obj, team_index, segment_index):
     f2f = float(json_obj[team_index]['segments'][segment_index]['f2f'])
     flrs = int(json_obj[team_index]['segments'][segment_index]['flrs'])
     return f2f * flrs
 
-def getFloorArea(team_index, segment_index):
-    json_obj = getJson('beats.json')
+def getFloorArea(json_obj, team_index, segment_index):
     flrs = int(json_obj[team_index]['segments'][segment_index]['flrs'])
     gfa = float(json_obj[team_index]['segments'][segment_index]['gfa'])
     return gfa / flrs
 
-def getVolume(team_index, segment_index):
-    json_obj = getJson('beats.json')
-    return getFloorArea(team_index, segment_index) * getHeight(team_index, segment_index)
+def getVolume(json_obj, team_index, segment_index):
+    return getFloorArea(json_obj, team_index, segment_index) * getHeight(json_obj, team_index, segment_index)
 
 
 def getBuildingHeight(bot, update):
@@ -84,12 +71,6 @@ def getBuildingFloorArea(bot, update):
     chat_id = update.message.chat_id
     args = getArgs(update)
     bot.send_message(chat_id=chat_id, text=getFloorArea(int(args[0])))
-
-def getBuildingVolume(bot, update):
-    chat_id = update.message.chat_id
-    args = getArgs(update)
-    bot.send_message(chat_id=chat_id, text=getVolume(int(args[0])))
-
 
 #how to get this value in teamcreater?
 def getNum (bot, update):

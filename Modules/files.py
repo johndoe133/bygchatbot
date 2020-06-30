@@ -8,6 +8,7 @@ import requests, urllib.request
 import jsonschema
 from jsonschema import validate
 from datetime import datetime
+from pathlib import Path
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -19,6 +20,7 @@ REQUEST_FILE, GET_IMAGE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION = range(6
 file_type = ""
 file_id = ""
 file_name = ""
+files_dir = Path.cwd() / 'Files'
 
 def ask_file_type(update, context):
     reply_keyboard = [['Image','Beats', 'IFC','Cancel']]
@@ -34,6 +36,9 @@ def request_file(update, context):
     response = update.message.text
     chat_id = update.message.chat_id
     file_type = response.lower()
+    if (file_type not in ['image','beats', 'ifc','cancel']):
+        update.message.reply_text('Send file cancelled. Type /sendfile to try again.')
+        return ConversationHandler.END
     update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'")
     return GET_IMAGE
 
@@ -56,15 +61,17 @@ def get_a_file(update, context):
             file_id =update.message.document.file_id
         gen_file = bot.get_file(file_id)
         gen_file.download()
+        # Path(Path.cwd() / file_name).rename(files_dir / file_name)
         logger.info(f'{file_type} successfully downloaded')
         file_name = (str(gen_file.file_path).split('/'))[-1]
         if file_type == 'beats':
-            temp_json = getJson(file_name)
+            temp_json = getJson(Path.cwd() / file_name)
             valid = (validate_beats(temp_json))
             if (valid != "valid"):
                 logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
                 update.message.reply_text("Invalid beats file due to " + valid + ", cancelling file upload. Type /sendfile to try again")
                 return ConversationHandler.END
+        Path(Path.cwd() / file_name).rename(files_dir / file_name)
         update.message.reply_text(f"{file_type[0].upper()}{file_type[1:]} acquired!")
         update.message.reply_text('Please enter a short title of the file')
         return GET_NAME
@@ -78,7 +85,7 @@ def get_name(update, context):
     global file_type
     name = update.message.text
     user = update.message.from_user
-    j = getJson('files.json')
+    j = getJson(files_dir / 'files.json')
     if not (file_type in j.keys()):
         j[file_type] = []
     counter = 0
@@ -94,7 +101,7 @@ def get_name(update, context):
         name += f" ({counter})"
 
     j[file_type].append({"name":name, "uploaded_by":user.name, "date":str(datetime.now()), 'file_id':file_id, 'file_name':file_name})
-    with open('files.json', 'w') as outfile:
+    with Path(files_dir / 'files.json').open(mode='w') as outfile:
         json.dump(j, outfile, indent=4)
 
     update.message.reply_text('Enter a description: ')
@@ -102,9 +109,9 @@ def get_name(update, context):
 
 def get_description(update, context):
     desc = update.message.text
-    j = getJson('files.json')
+    j = getJson(files_dir / 'files.json')
     j[file_type][-1]['description'] = desc
-    with open('files.json', 'w') as outfile:
+    with Path(files_dir / 'files.json').open(mode='w') as outfile:
         json.dump(j, outfile, indent=4)
     update.message.reply_text('File uploaded! View your files with /filemanage')
     return ConversationHandler.END

@@ -1,5 +1,4 @@
-from beats import (token, get, getBuildingFloorArea, getBuildingHeight, 
-                    getBuildingVolume, getJson, getHeight, getVolume, getFloorArea)
+from beats import (token, getJson)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
