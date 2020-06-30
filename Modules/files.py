@@ -18,6 +18,7 @@ REQUEST_FILE, GET_IMAGE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION = range(6
 
 file_type = ""
 file_id = ""
+file_name = ""
 
 def ask_file_type(update, context):
     reply_keyboard = [['Image','Beats', 'IFC','Cancel']]
@@ -32,101 +33,67 @@ def request_file(update, context):
 
     response = update.message.text
     chat_id = update.message.chat_id
-    if (response.lower() == 'image'):
-        logger.info("User %s wishes to upload an image", user.first_name)
-        update.message.reply_text("Send an image file to me, if you would like to cancel type 'cancel'")
-        file_type = 'image'
-        return GET_IMAGE
-    elif (response.lower() == 'beats'):
-        logger.info("User %s wishes to upload beats", user.first_name)
-        update.message.reply_text("Send a .json file to me, if you would like to cancel type 'cancel'")
-        file_type = 'beats'
-        return GET_BEATS
-    elif (response.lower() == 'ifc'):
-        logger.info("User %s wishes to upload IFC", user.first_name)
-        update.message.reply_text("Send a .json file to me, if you would like to cancel type 'cancel'")
-        file_type = 'ifc'
-        return GET_IFC
-    else:
+    file_type = response.lower()
+    update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'")
+    return GET_IMAGE
+
+def get_a_file(update, context):
+    if (file_type not in ['image', 'beats', 'ifc']):
         return ConversationHandler.END
 
-def get_image(update, context):
     #logging
     user = update.message.from_user
-    logger.info('User %s is requested to send image', user.first_name)
+    logger.info(f'User {user.first_name} is requested to send {file_type}')
     global file_id
+    global file_name
+    bot = context.bot
 
     chat_id = update.message.chat_id
-    try:   
-        file_id = update.message.photo[-1].file_id
-        base_url = 'https://api.telegram.org/bot'
-        with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
-            data = json.loads(obj.read())
-        f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
-        open('image.jpg','wb').write(f.content)
-        logger.info('Image successfully acquired from %s', user.first_name)
-        update.message.reply_text("Image acquired!")
+    try:
+        if (file_type == 'image'):
+            file_id = update.message.photo[-1].file_id
+        else:
+            file_id =update.message.document.file_id
+        gen_file = bot.get_file(file_id)
+        gen_file.download()
+        logger.info(f'{file_type} successfully downloaded')
+        file_name = (str(gen_file.file_path).split('/'))[-1]
+        if file_type == 'beats':
+            temp_json = getJson(file_name)
+            valid = (validate_beats(temp_json))
+            if (valid != "valid"):
+                logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
+                update.message.reply_text("Invalid beats file due to " + valid + ", cancelling file upload. Type /sendfile to try again")
+                return ConversationHandler.END
+        update.message.reply_text(f"{file_type[0].upper()}{file_type[1:]} acquired!")
         update.message.reply_text('Please enter a short title of the file')
         return GET_NAME
     except Exception as e:
         logger.info('Failed to acquire image from %s', user.first_name)
         logger.info(e)
-        update.message.reply_text("File was not an image, cancelling file upload. Type /sendfile to try again")
+        update.message.reply_text(f"File was not a(n) {file_type}, cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
-
-
-def get_beats(update, context):
-    #logging
-    user = update.message.from_user
-    logger.info('User %s is requested to send beats', user.first_name)
-    global file_id
-
-    chat_id = update.message.chat_id
-    file_id = update.message.document.file_id
-    base_url = 'https://api.telegram.org/bot'
-    with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
-        data = json.loads(obj.read())
-    f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
-    open('temp_beats.json','wb').write(f.content)
-    logger.info('Beats received from %s', user.first_name)
-    temp_json = getJson("temp_beats.json")
-    valid = (validate_beats(temp_json))
-    if (valid == "valid"):
-        open('beats.json','wb').write(f.content)
-        logger.info('Beats successfully acquired from %s', user.first_name)
-        update.message.reply_text("Beats acquired!")
-        update.message.reply_text('Please enter a short title of the file')
-    else:
-        logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
-        update.message.reply_text("Invalid beats file due to " + valid + ", cancelling file upload. Type /sendfile to try again")
-        return ConversationHandler.END
-    return GET_NAME
-
-def get_ifc(update, context):
-    #logging
-    user = update.message.from_user
-    logger.info('User %s is requested to send ifc', user.first_name)
-    global file_id
-
-    chat_id = update.message.chat_id
-    file_id = update.message.document.file_id
-    base_url = 'https://api.telegram.org/bot'
-    with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
-        data = json.loads(obj.read())
-    f = requests.get('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
-    
-    open('ifc_from_user.json','wb').write(f.content)
-    logger.info('IFC successfully acquired from %s', user.first_name)
-    update.message.reply_text("Beats acquired!")
-    update.message.reply_text('Please enter a short title of the file')
-    return GET_NAME
 
 def get_name(update, context):
     global file_type
     name = update.message.text
     user = update.message.from_user
     j = getJson('files.json')
-    j[file_type].append({"name":name, "uploaded_by":user.name, "date":str(datetime.now()), 'file_id':file_id})
+    if not (file_type in j.keys()):
+        j[file_type] = []
+    counter = 0
+    duplicate = False
+    for item in j[file_type]:
+        if item['name'] == name:
+            duplicate = True
+            update.message.reply_text(f'The file name \'{name}\' is already in use')
+        elif item['name'][:-4] == name:
+            counter += 1
+    if duplicate:
+        update.message.reply_text(f'Uploading file as \'{name} ({counter})\'')
+        name += f" ({counter})"
+
+    j[file_type].append({"name":name, "uploaded_by":user.name, "date":str(datetime.now()), 'file_id':file_id, 'file_name':file_name})
     with open('files.json', 'w') as outfile:
         json.dump(j, outfile, indent=4)
 

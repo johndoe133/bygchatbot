@@ -45,15 +45,20 @@ def send_file(update, context):
     chat_id = update.message.chat_id
     j = getJson('files.json')[file_type]
     try:
-        file_id = [item['file_id'] for item in j if item['name'].lower() == file_name][0]
-        print(file_id)
+        index = [index for index, item in enumerate(j) if item['name'].lower() == file_name][0]
     except:
         update.message.reply_text('No file with this filename')
         return ConversationHandler.END
-    base_url = 'https://api.telegram.org/bot'
-    with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
-        data = json.loads(obj.read())
-    update.message.reply_text('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
+    # base_url = 'https://api.telegram.org/bot'
+    # with urllib.request.urlopen(base_url + token + '/getFile?file_id=' + file_id) as obj:
+    #     data = json.loads(obj.read())
+    # update.message.reply_text('https://api.telegram.org/file/bot' + token + '/' + data['result']['file_path'])
+    bot = context.bot
+    if (file_type == 'image'):
+        bot.send_photo(chat_id=chat_id, photo=open(j[index]['file_name'], 'rb'), filename=j[index]['name'])
+    else:
+        bot.send_document(chat_id=chat_id, document=open(j[index]['file_name'], 'rb'), 
+        filename=j[index]['name']+ '.' + j[index]['file_name'].split('.')[-1])
     return ConversationHandler.END
 
 

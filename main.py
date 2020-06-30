@@ -57,9 +57,7 @@ def main():
         entry_points=[CommandHandler('sendfile', ask_file_type)],
         states={
             REQUEST_FILE: [MessageHandler(Filters.all, request_file)],
-            GET_IMAGE: [MessageHandler(Filters.all, get_image)],
-            GET_BEATS: [MessageHandler(Filters.all, get_beats)],
-            GET_IFC: [MessageHandler(Filters.all, get_ifc)],
+            GET_IMAGE: [MessageHandler(Filters.all, get_a_file)],
             GET_NAME: [MessageHandler(Filters.all, get_name)],
             GET_DESCRIPTION: [MessageHandler(Filters.all, get_description)]
         },

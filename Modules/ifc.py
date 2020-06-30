@@ -69,7 +69,6 @@ def get_min_height(obj):
 
 def get_mesh(all_points, all_triangles):
     vertices = np.array(all_points, dtype=[('x', 'f4'), ('y', 'f4'),('z', 'f4')])
-    print(vertices[0:10])
     faces = np.array(all_triangles,
     dtype=[('vertex_indices', 'i4', (3,)),('red', 'u1'), ('green', 'u1'),('blue', 'u1')])
 
@@ -198,9 +197,6 @@ def get_ifc_response(update, context):
         mesh = get_mesh(all_points, all_triangles)
         show_wire_mesh(mesh)
         return ConversationHandler.END
-    elif (option == 'Stretch a class'):
-        indices = find_all_points_in_class('Space', json_obj)
-        print(indices[0:10])
     else:
         update.message.reply_text('Invalid option')
         return ConversationHandler.END
