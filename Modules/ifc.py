@@ -83,7 +83,21 @@ def get_mesh(all_points, all_triangles):
     return mesh
 
 def show_building(mesh):
-    o3d.visualization.draw_geometries([mesh])
+    # o3d.visualization.draw_geometries([pcd])
+    vis = o3d.visualization.Visualizer()
+    vis.create_window()
+    vis.add_geometry(mesh)
+    ctr = vis.get_view_control()
+    ctr.rotate(0.0, -500.0)
+    ctr.rotate(200, 0)
+    ctr.rotate(0, 150)
+    vis.update_geometry(mesh)
+    vis.poll_events()
+    vis.update_renderer()
+    print('capturing screen image')
+    vis.capture_screen_image('wow.png')
+    print('Screen image captured')
+    vis.destroy_window()
 
 def show_wire_mesh(mesh):
     line_set = o3d.geometry.LineSet.create_from_triangle_mesh(mesh)
@@ -157,10 +171,13 @@ def ifc_start(update, context):
 def get_ifc_response(update, context):
     json_obj = getJson('duplex_A.json')
     option = update.message.text
+    chat_id = update.message.chat_id
     if (option == 'View'):
         all_points, all_triangles = get_all_triangles_points('duplex_A.json')
         mesh = get_mesh(all_points, all_triangles)
         show_building(mesh)
+        bot = context.bot
+        bot.send_photo(chat_id=chat_id, photo=open('wow.png', 'rb'))
         return ConversationHandler.END
     elif (option == 'Get analysis'):
         return start_analysis(update, context)
