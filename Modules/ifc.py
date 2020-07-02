@@ -17,6 +17,10 @@ import os
 
 GET_IFC_RESPONSE, GET_STRETCH_PARAMETERS = range(2)
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 def split_triangles_points(items, counter):
     lines = items[0].split('\n')
     points = []
@@ -81,26 +85,44 @@ def get_mesh(all_points, all_triangles):
     mesh.compute_vertex_normals()
     return mesh
 
-def show_building(mesh):
-    # o3d.visualization.draw_geometries([pcd])
-    vis = o3d.visualization.Visualizer()
-    vis.create_window()
-    vis.add_geometry(mesh)
+def rotate(vis, mesh, X, Y):
     ctr = vis.get_view_control()
-    ctr.rotate(0.0, -500.0)
-    ctr.rotate(200, 0)
-    ctr.rotate(0, 150)
+    for x, y in zip(X, Y):
+        ctr.rotate(x, y)
     vis.update_geometry(mesh)
     vis.poll_events()
     vis.update_renderer()
-    print('capturing screen image')
-    vis.capture_screen_image('wow.png')
-    print('Screen image captured')
+    return vis
+
+def show_building(mesh):
+    vis = o3d.visualization.Visualizer()
+    vis.create_window()
+    vis.add_geometry(mesh)
+    vis = rotate(vis, mesh, [0, 200, 0], [-500, 0, 150])
+
+
+    # ctr = vis.get_view_control()
+    # ctr.rotate(0.0, -500.0)
+    # ctr.rotate(200, 0)
+    # ctr.rotate(0, 150)
+    # vis.update_geometry(mesh)
+    # vis.poll_events()
+    # vis.update_renderer()
+
+    logger.info('capturing screen images')
+    vis.capture_screen_image('1.png')
+    vis = rotate(vis, mesh, [0, -200, -200, 0], [-150, 0, 0, 150])
+    vis.capture_screen_image('2.png')
+    vis = rotate(vis, mesh, [0, 200, 900, 0], [-150, 0, 0, 150])
+    vis.capture_screen_image('3.png')
+    vis = rotate(vis, mesh, [0, -900, -900, 0], [-150, 0, 0, 150])
+    vis.capture_screen_image('4.png')
+    logger.info('Screen images captured')
     vis.destroy_window()
 
 def show_wire_mesh(mesh):
     line_set = o3d.geometry.LineSet.create_from_triangle_mesh(mesh)
-    o3d.visualization.draw_geometries([line_set])
+    show_building(line_set)
     
 def stretch_z(all_points, min_z, max_z, amt):
     for i, (x, y, z) in enumerate(all_points):
@@ -176,7 +198,7 @@ def get_ifc_response(update, context):
         mesh = get_mesh(all_points, all_triangles)
         show_building(mesh)
         bot = context.bot
-        bot.send_photo(chat_id=chat_id, photo=open('wow.png', 'rb'))
+        [bot.send_photo(chat_id=chat_id, photo=open(f'{i}.png', 'rb')) for i in range(1, 5)]
         return ConversationHandler.END
     elif (option == 'Get analysis'):
         return start_analysis(update, context)
@@ -192,13 +214,14 @@ def get_ifc_response(update, context):
         show_building(mesh)
         return ConversationHandler.END
     elif (option == 'View wire frame'):
-        update.message.reply_text('Showing wire frame of building: ')
         all_points, all_triangles = get_all_triangles_points('duplex_A.json')
         mesh = get_mesh(all_points, all_triangles)
         show_wire_mesh(mesh)
+        bot = context.bot
+        [bot.send_photo(chat_id=chat_id, photo=open(f'{i}.png', 'rb')) for i in range(1, 5)]
         return ConversationHandler.END
     else:
-        update.message.reply_text('Invalid option')
+        update.message.reply_text('Invalid option', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
 def get_stretch_parameters(update, context):
@@ -206,7 +229,7 @@ def get_stretch_parameters(update, context):
     try:
         parameters = stretch_parameters.split(',')
         if len(parameters) != 3:
-            update.message.reply_text('Invalid format! Format must be <code>min_z, max_z, amount</code>. Cancelled transaction')
+            update.message.reply_text('Invalid format! Format must be <code>min_z, max_z, amount</code>. Cancelled transaction', reply_markup=ReplyKeyboardRemove())
             return ConversationHandler.END
         
         all_points, all_triangles = get_all_triangles_points('duplex_A.json')
