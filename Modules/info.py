@@ -15,9 +15,9 @@ logger = logging.getLogger(__name__)
 
 OVERVIEW, TEAM_INFO, SEGMENT_INFO, GIVE_INFO = range(4)
 TEAM = ""
-TEAM_INDEX = 0
+TEAM_INDEX = None
 SEGMENT = ""
-SEGMENT_INDEX = 0
+SEGMENT_INDEX = None
 METRIC = ""
 beats_path = Path('.')
 beats_file_name = ""
@@ -35,7 +35,11 @@ def overview(update, context):
     reply_keyboard = [[]]
     file_title = update.message.text
     j = getJson(Path(Path.cwd()) / 'Files' / 'files.json')
-    beats_file_name = [item['file_name'] for item in j['beats'] if item['name'] == file_title][0]
+    beats_file_name = [item['file_name'] for item in j['beats'] if item['name'] == file_title]
+    if len(beats_file_name) == 0:
+        update.message.reply_text('Invalid file title, cancelling action. Type /viewbeats to try again.')
+        return ConversationHandler.END
+    beats_file_name = beats_file_name[0]
     beats_path = Path(Path.cwd() / 'Files' / beats_file_name)
     json_obj = getJson(beats_path)
     json_str = ""
@@ -71,10 +75,16 @@ def team_info(update, context):
     user = update.message.from_user
     global TEAM_INDEX
     TEAM = update.message.text
+    found = False
     for i in range(len(json_obj)):
         if json_obj[i]['team'] == TEAM:
+            found = True
             TEAM_INDEX=i
             break
+    if (not found):
+        update.message.reply_text('Invalid team, cancelling action. Try /viewbeats to try again.',
+        reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
     logger.info("Team that %s wishes to examine: %s", user.first_name, TEAM)
     logger.info("Team index: %i", TEAM_INDEX)
     reply_keyboard = [[]]
@@ -113,12 +123,27 @@ def segments_info(update, context):
     json_obj = getJson(beats_path)
     user = update.message.from_user
     SEGMENT = update.message.text
+    try:
+        SEGMENT = int(SEGMENT)
+    except:
+        update.message.reply_text('Invalid segment. It must be a number. Cancelling action, try /viewbeats to try again')
+        return ConversationHandler.END
     global TEAM_INDEX
     global SEGMENT_INDEX
     reply_keyboard = [['Height','Volume','Floor Area', 'Cancel']]
+    found = False
     for index, segment in enumerate(json_obj[TEAM_INDEX]['segments']):
+        print(index)
         if segment['id'] == SEGMENT:
+            found = True
+            print('found it')
             SEGMENT_INDEX = index
+    
+    if (not found):
+        update.message.reply_text('Invalid segment, cancelling action. Try /viewbeats to try again.',
+        reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+
     json_formatted = json.dumps(json_obj[TEAM_INDEX]['segments'][SEGMENT_INDEX], indent=0)
     formatted_str = "==========================\n"
     for line in json_formatted.split("\n"):
@@ -134,9 +159,9 @@ def segments_info(update, context):
             line = line.split(": ")
             formatted_str += f'<code>{line[0]:15}: {line[1]:>10}</code>\n'
     update.message.reply_text(
-        "This is the information I found on segment " + SEGMENT + "\n\n-------\n"
+        "This is the information I found on segment " + str(SEGMENT) + "\n\n-------\n"
         +formatted_str+ "\n--------\n"
-        "What further information would you like on segment " + SEGMENT,
+        "What further information would you like on segment " + str(SEGMENT),
         reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return GIVE_INFO
 
@@ -162,7 +187,12 @@ def give_info(update, context):
         update.message.reply_text('The floor area is: ' + str(getFloorArea(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
         reply_markup=ReplyKeyboardRemove())
     elif (METRIC == 'Cancel'):
+        update.message.reply_text('Cancelling action, try /viewbeats to try again.',
+        reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
+    else:
+        update.message.reply_text('Invalid input. Cancelling action, try /viewbeats to try again.',
+        reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 def cancel(update, context):
