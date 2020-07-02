@@ -34,7 +34,7 @@ def show(update ,context):
     j = getJson(files_dir / 'files.json')
 
     if j[file_type] == []:
-        update.message.reply_text('There is currently no files stored for this format \nView other file formats with /filemanage or upload a new file with /sendfile')
+        update.message.reply_text('There are currently no files stored for this format \nView other file formats with /filemanage or upload a new file with /sendfile')
         return ConversationHandler.END
 
     try:
