@@ -37,7 +37,10 @@ def request_file(update, context):
     chat_id = update.message.chat_id
     file_type = response.lower()
     if (file_type not in ['image','beats', 'ifc','cancel']):
-        update.message.reply_text('Send file cancelled. Type /sendfile to try again.')
+        update.message.reply_text('Invalid input. Send file cancelled. Type /sendfile to try again.', reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+    elif (file_type == 'cancel'):
+        update.message.reply_text('Send file cancelled. Type /sendfile to try again.', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
     update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'")
     return GET_IMAGE
@@ -76,7 +79,7 @@ def get_a_file(update, context):
         update.message.reply_text('Please enter a short title of the file')
         return GET_NAME
     except Exception as e:
-        logger.info('Failed to acquire image from %s', user.first_name)
+        logger.info('Failed to acquire %s from %s', file_type, user.first_name)
         logger.info(e)
         update.message.reply_text(f"File was not a(n) {file_type}, cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
