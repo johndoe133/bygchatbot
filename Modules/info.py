@@ -23,8 +23,10 @@ beats_path = Path('.')
 beats_file_name = ""
 
 def view_beats(update, context):
-    print('-----------------------')
     j = getJson(Path(Path.cwd()) / 'Files' / 'files.json')
+    if len(j['beats']) == 0:
+        update.message.reply_text('You have not uploaded any beats files yet!')
+        return ConversationHandler.END
     update.message.reply_text(show_all_file_type(j, 'beats'))
     update.message.reply_text('To get an overview of the beats, first select a beats file to view')
     return OVERVIEW
@@ -126,7 +128,8 @@ def segments_info(update, context):
     try:
         SEGMENT = int(SEGMENT)
     except:
-        update.message.reply_text('Invalid segment. It must be a number. Cancelling action, try /viewbeats to try again')
+        update.message.reply_text('Invalid segment. It must be a number. Cancelling action, try /viewbeats to try again'
+        , reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
     global TEAM_INDEX
     global SEGMENT_INDEX
