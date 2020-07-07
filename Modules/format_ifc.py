@@ -3,6 +3,7 @@ import json
 from beats import (getJson)
 from plyfile import PlyData, PlyElement
 import open3d as o3d
+import copy
 
 def format_faces_verts(shape_rep, counter):
     tuple_verts = shape_rep['Vertices']
@@ -101,9 +102,6 @@ def draw_building_colored(o, r, color_id):
     mesh_color.paint_uniform_color([1, 0.706, 0])
 
     meshes = [mesh, mesh_color]
-
-    # meshes = [mesh_color]
-
     
     o3d.visualization.draw_geometries(meshes)
 
@@ -137,6 +135,8 @@ def draw_building_no_windows():
     o3d.visualization.draw_geometries([mesh])
 
 def draw_building(o, r):
+    o = copy.deepcopy(o)
+    r = copy.deepcopy(r)
     counter = 0
     all_verts = []
     all_faces = []
@@ -155,6 +155,7 @@ def draw_building(o, r):
     mesh =  o3d.io.read_triangle_mesh("ply1.ply")
     mesh.compute_vertex_normals()
     o3d.visualization.draw_geometries([mesh])
+    return mesh
 
 def draw_item(o, r, id):
     new_o = dict()
@@ -183,6 +184,8 @@ def move_vertices(vertices, amt):
     
 
 def stretch_wall(o, r, key_wall, factor):
+    o = copy.deepcopy(o)
+    r = copy.deepcopy(r)
     shape_id = o[key_wall]['Representations'][0]['ref']
     shape_rep = r[shape_id]
     vertices = shape_rep['Vertices']
@@ -195,22 +198,31 @@ def stretch_wall(o, r, key_wall, factor):
         current_min_z = find_min_z(vertices)
         current_max_z = find_max_z(vertices)
         if (current_min_z >= min_z and current_max_z <= max_z):
+            # Item is within z boundaries of wall, stretch by same factor
             shape_rep = r[key]
             vertices = shape_rep['Vertices']
             vertices = stretch_vertices(vertices, factor, min_z)
             r[key]['Vertices'] = vertices
+        elif (current_min_z >= max_z):
+            # Item is above wall, move upwards
+            shape_rep = r[key]
+            vertices = shape_rep['Vertices']
+            vertices = move_vertices(vertices, amt)
+            r[key]['Vertices'] = vertices
+        elif (current_max_z >= max_z):
+            # item's top is above bounds of wall, so we stretch it 
+            # such that the height added to it is the same as the height added to the wall
+            f = (factor * (max_z-min_z) + (current_max_z - current_min_z))/(current_max_z-current_min_z)
+            shape_rep = r[key]
+            vertices = shape_rep['Vertices']
+            vertices = stretch_vertices(vertices, f, current_min_z)
         # elif (current_max_z <= max_z and current_min_z <= min_z):
         #     spec_factor = (1+amt)/(current_max_z-current_min_z)
         #     shape_rep = r[key]
         #     vertices = shape_rep['Vertices']
         #     vertices = stretch_vertices(vertices, spec_factor, current_min_z)
         #     r[key]['Vertices'] = vertices
-        elif (current_max_z >= min_z):
-            # Item is above wall, move upwards
-            shape_rep = r[key]
-            vertices = shape_rep['Vertices']
-            vertices = move_vertices(vertices, amt)
-            r[key]['Vertices'] = vertices
+        
         else:
             # Assuming nothing with a lower z value that min_z and higher z value than max_z exists
             # It must be below the wall we want to stretch
@@ -221,19 +233,33 @@ def stretch_wall(o, r, key_wall, factor):
     return r
 
 if __name__ == "__main__":
-    reformat()
+    # reformat()
     # draw_building_colored()
     ifc = getJson('duplex_A_reformat.json')
     o = ifc['Objects']
     r = ifc['ShapeRepresentations']
+    r = copy.deepcopy(r)
+    # this one worked with +0.1: 32c6a8a1-ae87-4d92-b022-03fbfb4828fb
     for id in o:
         if (o[id]['Class'] == 'Wall'):
             print(f'id: {id}')
             print(f'type: {o[id]["ObjectType"]}')
             r_stretched = stretch_wall(o, r, id, 4)
             draw_building_colored(o, r_stretched, id)
+            # draw_building_colored(o, r, id)
+
+    # id = '32c6a4dc-d1c8-46d0-b03d-61195a824b41'
+    # r_stretched = stretch_wall(o, r, id, 4)
+    # mesh = draw_building(o, r_stretched)
+    # line_set = o3d.geometry.LineSet.create_from_triangle_mesh(mesh)
+    # o3d.visualization.draw_geometries([line_set])
+    # mesh = draw_building(o, r)
+    # line_set = o3d.geometry.LineSet.create_from_triangle_mesh(mesh)
+    # o3d.visualization.draw_geometries([line_set])
     # draw_item(o, r, id)
-    
+
+    # id = '32c64a5c-f560-4897-b0c5-b14c77f87e53'
+    # draw_building_colored(o, r, id)
     
 
 
