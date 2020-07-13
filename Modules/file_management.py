@@ -10,6 +10,10 @@ from pathlib import Path
 
 files_dir = Path.cwd() / 'Files'
 
+# Enable logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 SHOW, SEND_FILE = range(2)
 
@@ -46,7 +50,8 @@ def show(update ,context):
         update.message.reply_text(show_all_file_type(j, file_type))
         update.message.reply_text('Which file would you like to download? Type the name of the file', reply_markup=ReplyKeyboardRemove())
         return SEND_FILE
-    except:
+    except Exception as e:
+        logger.info(e)
         update.message.reply_text('Invalid file type!')
         return ConversationHandler.END
 

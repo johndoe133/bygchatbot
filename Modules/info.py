@@ -179,23 +179,26 @@ def give_info(update, context):
 
     global TEAM_INDEX
     global SEGMENT_INDEX
-
-    if (METRIC == 'Height'):
-        update.message.reply_text('The height of the building is: ' + str(getHeight(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
-        reply_markup=ReplyKeyboardRemove())
-    elif (METRIC == 'Volume'):
-        update.message.reply_text('The volume of the building is: ' + str(getVolume(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
-        reply_markup=ReplyKeyboardRemove())
-    elif (METRIC == 'Floor Area'):
-        update.message.reply_text('The floor area is: ' + str(getFloorArea(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
-        reply_markup=ReplyKeyboardRemove())
-    elif (METRIC == 'Cancel'):
-        update.message.reply_text('Cancelling action, try /viewbeats to try again.',
-        reply_markup=ReplyKeyboardRemove())
-        return ConversationHandler.END
-    else:
-        update.message.reply_text('Invalid input. Cancelling action, try /viewbeats to try again.',
-        reply_markup=ReplyKeyboardRemove())
+    try:
+        if (METRIC == 'Height'):
+            update.message.reply_text('The height of the building is: ' + str(getHeight(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
+            reply_markup=ReplyKeyboardRemove())
+        elif (METRIC == 'Volume'):
+            update.message.reply_text('The volume of the building is: ' + str(getVolume(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
+            reply_markup=ReplyKeyboardRemove())
+        elif (METRIC == 'Floor Area'):
+            update.message.reply_text('The floor area is: ' + str(getFloorArea(json_obj, TEAM_INDEX, SEGMENT_INDEX)),
+            reply_markup=ReplyKeyboardRemove())
+        elif (METRIC == 'Cancel'):
+            update.message.reply_text('Cancelling action, try /viewbeats to try again.',
+            reply_markup=ReplyKeyboardRemove())
+            return ConversationHandler.END
+        else:
+            update.message.reply_text('Invalid input. Cancelling action, try /viewbeats to try again.',
+            reply_markup=ReplyKeyboardRemove())
+    except:
+        update.message.reply_text('Invalid measurements. Cancelling action, try /viewbeats to try again',
+            reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 def cancel(update, context):

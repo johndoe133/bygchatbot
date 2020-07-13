@@ -202,7 +202,7 @@ def get_ifc_response(update, context):
         return ConversationHandler.END
     elif (option == 'Get analysis'):
         return start_analysis(update, context)
-    elif (option == 'S T R E T C H'):
+    elif (option == 'Stretch'):
         update.message.reply_text('Provide the range along the z axis you would like to stretch, '
         'and the amount you would like to stretch in the following format:\n'
         '<code>min_z, max_z, amount</code>')
