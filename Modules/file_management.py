@@ -33,13 +33,18 @@ def show(update ,context):
     file_type = file_type.lower()
     j = getJson(files_dir / 'files.json')
 
-    if j[file_type] == []:
-        update.message.reply_text('There are currently no files stored for this format \nView other file formats with /filemanage or upload a new file with /sendfile')
+    if file_type not in j.keys():
+        update.message.reply_text("There are currently no files stored for this format \n"
+        "View other file formats with /filemanage or upload a new file with /sendfile", reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+    elif (j[file_type] == []):
+        update.message.reply_text("There are currently no files stored for this format \n"
+        "View other file formats with /filemanage or upload a new file with /sendfile", reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
     try:
         update.message.reply_text(show_all_file_type(j, file_type))
-        update.message.reply_text('Which file would you like to download? Type the name of the file')
+        update.message.reply_text('Which file would you like to download? Type the name of the file', reply_markup=ReplyKeyboardRemove())
         return SEND_FILE
     except:
         update.message.reply_text('Invalid file type!')

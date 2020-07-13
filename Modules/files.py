@@ -15,7 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-REQUEST_FILE, GET_IMAGE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION = range(6)
+REQUEST_FILE, GET_A_FILE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION = range(6)
 
 file_type = ""
 file_id = ""
@@ -42,8 +42,8 @@ def request_file(update, context):
     elif (file_type == 'cancel'):
         update.message.reply_text('Send file cancelled. Type /sendfile to try again.', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
-    update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'")
-    return GET_IMAGE
+    update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'", reply_markup=ReplyKeyboardRemove())
+    return GET_A_FILE
 
 def get_a_file(update, context):
     if (file_type not in ['image', 'beats', 'ifc']):
