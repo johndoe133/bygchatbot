@@ -14,12 +14,21 @@ import matplotlib.pyplot as plt
 import open3d as o3d
 from plyfile import PlyData, PlyElement
 import os
+from Modules.file_management import show_all_file_type
+from pathlib import Path
 
-GET_IFC_RESPONSE, GET_STRETCH_PARAMETERS = range(2)
+files_dir = Path.cwd() / 'Files'
+
+GET_IFC_RESPONSE, GET_STRETCH_PARAMETERS, GET_IFC_FILE, GET_STRETCHED_NAME, SAVE_STRETCHED = range(5)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+ifc_file_name = None
+ifc_name = None
+stretched_points = None
+old_file_name = None
 
 def split_triangles_points(items, counter):
     lines = items[0].split('\n')
@@ -159,9 +168,9 @@ def find_parent(json_obj, id):
     else:
         return {}
 
-def save_to_new_ifc(new_all_points):
+def save_to_new_ifc(new_all_points, old_file_name, new_file_name):
     counter = 0
-    json_obj = getJson('duplex_A.json')
+    json_obj = getJson(files_dir / old_file_name)
     stretched_json_obj = []
     for item in json_obj:
         class_name = item['Class']
@@ -179,22 +188,42 @@ def save_to_new_ifc(new_all_points):
                     points_triangles_str += f"f {a} {b} {c}\n"
             item['Items'] = [points_triangles_str]
         stretched_json_obj += [item]
-    with open('duplex_A_stretched.json', 'w') as outfile:
+    with Path(files_dir / f'{new_file_name}.json').open(mode = 'w') as outfile:
         json.dump(stretched_json_obj, outfile, indent=4)
 
 def ifc_start(update, context):
-    reply_keyboard = [['View', 'View wire frame'], ['Get analysis'], ['Stretch', 'View stretched']]
+    all_files = getJson(files_dir / 'files.json')
+    global ifc_file_name
+    if (ifc_file_name == None):
+        try:
+            update.message.reply_text(show_all_file_type(all_files, 'ifc'))
+        except:
+            update.message.reply_text('You have no files stored of type IFC. Try using /sendfile to store one. ')
+            return ConversationHandler.END
+        update.message.reply_text('Which IFC file would you like to load? Type the name of the file')
+        return GET_IFC_FILE
+    reply_keyboard = [['Load an IFC file'], ['View', 'View wire frame'], ['Get analysis', 'Stretch']]
     update.message.reply_text('What would you like to do?',
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     
     return GET_IFC_RESPONSE
 
 def get_ifc_response(update, context):
-    json_obj = getJson('duplex_A.json')
+    json_obj = getJson(files_dir / ifc_file_name)
+    all_files = getJson(files_dir / 'files.json')
     option = update.message.text
     chat_id = update.message.chat_id
-    if (option == 'View'):
-        all_points, all_triangles = get_all_triangles_points('duplex_A.json')
+    if (option == 'Load an IFC file'):
+        try:
+            update.message.reply_text(show_all_file_type(all_files, 'ifc'))
+        except:
+            update.message.reply_text('You have no files stored of type IFC. Try using /sendfile to store one. ')
+            return ConversationHandler.END
+        update.message.reply_text('Which IFC file would you like to load? Type the name of the file')
+        return GET_IFC_FILE
+    elif (option == 'View'):
+        print(ifc_file_name)
+        all_points, all_triangles = get_all_triangles_points(files_dir / ifc_file_name)
         mesh = get_mesh(all_points, all_triangles)
         show_building(mesh)
         bot = context.bot
@@ -212,9 +241,11 @@ def get_ifc_response(update, context):
         all_points, all_triangles = get_all_triangles_points('duplex_A_stretched.json')
         mesh = get_mesh(all_points, all_triangles)
         show_building(mesh)
+        bot = context.bot
+        [bot.send_photo(chat_id=chat_id, photo=open(f'{i}.png', 'rb')) for i in range(1, 5)]
         return ConversationHandler.END
     elif (option == 'View wire frame'):
-        all_points, all_triangles = get_all_triangles_points('duplex_A.json')
+        all_points, all_triangles = get_all_triangles_points(files_dir / ifc_file_name)
         mesh = get_mesh(all_points, all_triangles)
         show_wire_mesh(mesh)
         bot = context.bot
@@ -224,7 +255,24 @@ def get_ifc_response(update, context):
         update.message.reply_text('Invalid option', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
+def get_ifc_file(update, context):
+    global ifc_file_name
+    ifc_file_name = update.message.text
+    ifc_file_name = ifc_file_name.lower()
+    all_files = getJson(files_dir / 'files.json')
+    all_ifc = all_files['ifc']
+    try:
+        index = [index for index, item in enumerate(all_ifc) if item['name'].lower() == ifc_file_name][0]
+        ifc_file_name = all_ifc[index]['file_name']
+        update.message.reply_text('Successfully loaded file!')
+        return ifc_start(update, context)
+    except:
+        update.message.reply_text('No file with this filename')
+        ifc_file_name = None
+        return ConversationHandler.END
+
 def get_stretch_parameters(update, context):
+    global stretched_points
     stretch_parameters = update.message.text
     try:
         parameters = stretch_parameters.split(',')
@@ -232,19 +280,47 @@ def get_stretch_parameters(update, context):
             update.message.reply_text('Invalid format! Format must be <code>min_z, max_z, amount</code>. Cancelled transaction', reply_markup=ReplyKeyboardRemove())
             return ConversationHandler.END
         
-        all_points, all_triangles = get_all_triangles_points('duplex_A.json')
+        all_points, all_triangles = get_all_triangles_points(files_dir / ifc_file_name)
         stretched_points = stretch_z(all_points, float(parameters[0]), float(parameters[1]), float(parameters[2]))
-
         update.message.reply_text(f'Success! Stretched all points along the z axis from {float(parameters[0])} to {float(parameters[1])} by {float(parameters[2])}')
-        save_to_new_ifc(stretched_points)
-        return ConversationHandler.END
+        update.message.reply_text(f'Showing preview of stretching:')
+        show_building(get_mesh(stretched_points, all_triangles))
+        bot = context.bot
+        chat_id = update.message.chat_id
+        [bot.send_photo(chat_id=chat_id, photo=open(f'{i}.png', 'rb')) for i in range(1, 5)]
+        update.message.reply_text('Enter the name of the file you\'d like to save this as under IFC. If don\'t wish to save, type <code>cancel</code>')
+        return GET_STRETCHED_NAME
     except Exception as e:
         update.message.reply_text(f'Failed! Error message:\n<code>{e}</code>')
         return ConversationHandler.END
+
+def get_stretched_name(update, context):
+    global ifc_name
+    ifc_name = update.message.text
+    if ifc_name.lower() == 'cancel':
+        update.message.reply_text('Let\'s forget that ever happened...')
+        return ConversationHandler.END
+    update.message.reply_text(f'Enter a description of the file:')
+    return SAVE_STRETCHED
+
+def save_stretched(update, context):
+    user = update.message.from_user
+    response = update.message.text
+    from Modules.files import save_file_type
+    import time
+    file_title = 'stretched' + str(int(time.time()))
+    # with Path(files_dir / file_title).open(mode='w') as outfile:
+    #     json.dump(j, outfile, indent=4)
+
+    save_to_new_ifc(stretched_points, ifc_file_name, file_title)
+    save_file_type(update, ifc_name, file_title + '.json', response, 'ifc', user)
+    update.message.reply_text('Successfully saved IFC file! To view, use /ifc')
     return ConversationHandler.END
+    
+
 
 def start_analysis(update, context):
-    json_obj = getJson('duplex_A.json')
+    json_obj = getJson(files_dir / ifc_file_name)
     classes = {}
     for item in json_obj:
         class_name = item['Class']

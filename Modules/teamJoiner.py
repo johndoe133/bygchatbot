@@ -34,7 +34,7 @@ def join_team(update, context):
 
     logger.info('user %s wants to join a teams', update.message.from_user.name)
     update.message.reply_text('which group would you like to join?', 
-    reply_markup=ReplyKeyboardMarkup([reply_keyboard], one_time_keyboard=True))
+    reply_markup=ReplyKeyboardMarkup([reply_keyboard, ["Cancel"]], one_time_keyboard=True))
 
     return CHOOSE_TEAM
     
@@ -44,11 +44,19 @@ def join_team(update, context):
 def choose_team(update, context):
     user = update.message.from_user
     team_no = update.message.text
+    if team_no.lower() == 'cancel':
+        update.message.reply_text('Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
     try:
         team_no = int(team_no)
     except:
-        update.message.reply_text('Invalid number')
-    team_name = teams['teams'][team_no]['group_name']
+        update.message.reply_text('Not a number. Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+    try:
+        team_name = teams['teams'][team_no]['group_name']
+    except:
+        update.message.reply_text('Invalid team number. Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
     logger.info(f"{update.message.from_user.name} is joining team "+ team_name)
     
     for j in range(len(teams["teams"])):

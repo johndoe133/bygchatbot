@@ -108,7 +108,10 @@ def detailed_view(update,context):
         view_string += '</code>'
         update.message.reply_text(view_string)
 
-
+    elif choice.lower() == 'cancel':
+        update.message.reply_text('Cancelling view team. Type /teamstart to try again. ', reply_markup=ReplyKeyboardRemove())
+    else:
+        update.message.reply_text('Invalid team. Type /teamstart to try again. ', reply_markup=ReplyKeyboardRemove())
 
 
 

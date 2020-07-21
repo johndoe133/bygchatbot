@@ -64,7 +64,7 @@ def get_response(update, context):
     elif (option == "Join Group"):
         return join_team(update, context)
 
-    update.message.reply_text("Invalid Option")
+    update.message.reply_text("Invalid Option. Cancelling transaction. Type /teamstart to try again. ")
 
     return ConversationHandler.END  
 
@@ -92,7 +92,7 @@ def edit_groups(update, context):
     elif (option == "Remove Task"):
         return remove_task(update, context)
 
-    update.message.reply_text("Invalid Option")
+    update.message.reply_text("Invalid Option. Cancelling transaction, try /teamstart to try again. ")
 
     return ConversationHandler.END  
     

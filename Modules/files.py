@@ -21,6 +21,28 @@ file_type = ""
 file_id = ""
 file_name = ""
 files_dir = Path.cwd() / 'Files'
+file_name = None
+file_title = None
+
+def save_file_type(update, file_name, file_title, file_description, file_type, user):
+    j = getJson(files_dir / 'files.json')
+    if not (file_type in j.keys()):
+        j[file_type] = []
+    counter = 0
+    duplicate = False
+    for item in j[file_type]:
+        if item['name'] == file_name:
+            duplicate = True
+            update.message.reply_text(f'The file name \'{file_name}\' is already in use')
+        elif item['name'][:-4] == file_name:
+            counter += 1
+    if duplicate:
+        update.message.reply_text(f'Uploading file as \'{file_name} ({counter})\'')
+        file_name += f" ({counter})"
+
+    j[file_type].append({"name":file_name, "uploaded_by":user.name, "date":str(datetime.now()), 'file_id':file_id, 'file_name':file_title, 'description':file_description})
+    with Path(files_dir / 'files.json').open(mode='w') as outfile:
+        json.dump(j, outfile, indent=4)
 
 def ask_file_type(update, context):
     reply_keyboard = [['Image','Beats', 'IFC','Cancel']]
@@ -56,6 +78,7 @@ def get_a_file(update, context):
     logger.info(f'User {user.first_name} is requested to send {file_type}')
     global file_id
     global file_name
+    global file_title
     bot = context.bot
 
     chat_id = update.message.chat_id
@@ -67,15 +90,15 @@ def get_a_file(update, context):
         gen_file = bot.get_file(file_id)
         gen_file.download()
         logger.info(f'{file_type} successfully downloaded')
-        file_name = (str(gen_file.file_path).split('/'))[-1]
+        file_title = (str(gen_file.file_path).split('/'))[-1]
         if file_type == 'beats':
-            temp_json = getJson(Path.cwd() / file_name)
+            temp_json = getJson(Path.cwd() / file_title)
             valid = (validate_beats(temp_json))
             if (valid != "valid"):
                 logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
                 update.message.reply_text("Invalid beats file due to " + valid + ", cancelling file upload. Type /sendfile to try again")
                 return ConversationHandler.END
-        Path(Path.cwd() / file_name).replace(files_dir / file_name)
+        Path(Path.cwd() / file_title).replace(files_dir / file_title)
         update.message.reply_text(f"{file_type[0].upper()}{file_type[1:]} acquired!")
         update.message.reply_text('Please enter a short title of the file')
         return GET_NAME
@@ -87,35 +110,18 @@ def get_a_file(update, context):
 
 def get_name(update, context):
     global file_type
-    name = update.message.text
-    if (name is None):
+    global file_name
+    file_name = update.message.text
+    if (file_name is None):
         update.message.reply_text("Invalid title! Cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
-    user = update.message.from_user
-    j = getJson(files_dir / 'files.json')
-    if not (file_type in j.keys()):
-        j[file_type] = []
-    counter = 0
-    duplicate = False
-    for item in j[file_type]:
-        if item['name'] == name:
-            duplicate = True
-            update.message.reply_text(f'The file name \'{name}\' is already in use')
-        elif item['name'][:-4] == name:
-            counter += 1
-    if duplicate:
-        update.message.reply_text(f'Uploading file as \'{name} ({counter})\'')
-        name += f" ({counter})"
-
-    j[file_type].append({"name":name, "uploaded_by":user.name, "date":str(datetime.now()), 'file_id':file_id, 'file_name':file_name})
-    with Path(files_dir / 'files.json').open(mode='w') as outfile:
-        json.dump(j, outfile, indent=4)
-
     update.message.reply_text('Enter a description: ')
     return GET_DESCRIPTION
 
 def get_description(update, context):
     desc = update.message.text
+    user = update.message.from_user
+    global file_name
     j = getJson(files_dir / 'files.json')
     if (desc is None):
         j[file_type].pop(-1)
@@ -123,9 +129,7 @@ def get_description(update, context):
             json.dump(j, outfile, indent=4)
         update.message.reply_text("Invalid description! Cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
-    j[file_type][-1]['description'] = desc
-    with Path(files_dir / 'files.json').open(mode='w') as outfile:
-        json.dump(j, outfile, indent=4)
+    save_file_type(update, file_name, file_title, desc, file_type, user)
     update.message.reply_text('File uploaded! View your files with /filemanage')
     return ConversationHandler.END
     

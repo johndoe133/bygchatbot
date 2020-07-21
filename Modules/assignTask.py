@@ -73,10 +73,18 @@ def to_group(update, context):
     global task
     global description
 
-    group = int(group)
+    try:
+        group = int(group)
+    except:
+        update.message.reply_text('Not a number. Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
 
-    teams["teams"][group]["tasks"].append(task)
-    teams["teams"][group]["descriptions"].append(description)
+    try:
+        teams["teams"][group]["tasks"].append(task)
+        teams["teams"][group]["descriptions"].append(description)
+    except:
+        update.message.reply_text('Invalid group number. Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
 
     with open('teams.json', 'w') as outfile:
         json.dump(teams, outfile, indent = 4)

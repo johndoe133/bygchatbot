@@ -22,7 +22,7 @@ file_type = ""
 def show_all_file_type(j, file_type):
     output = ""
     for file in j[file_type]:
-        output += f'*{file["name"]}\n  Uploaded by {file["uploaded_by"]}\n  {file["date"]}\n  Description: {file["description"]}\n\n'
+        output += f'*{file["name"]}\n  Uploaded by {file["uploaded_by"]}\n  {file["date"]}\n  Description: {file["description"]}\n\n'        
     return output
 
 def show_what(update, context):
@@ -36,8 +36,11 @@ def show(update ,context):
     file_type = update.message.text
     file_type = file_type.lower()
     j = getJson(files_dir / 'files.json')
-
-    if file_type not in j.keys():
+    if file_type.lower() == 'cancel':
+        update.message.reply_text("Cancelling transaction. \n"
+        "Try again with /filemanage or upload a new file with /sendfile", reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
+    elif file_type not in j.keys():
         update.message.reply_text("There are currently no files stored for this format \n"
         "View other file formats with /filemanage or upload a new file with /sendfile", reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END

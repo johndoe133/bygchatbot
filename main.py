@@ -177,7 +177,10 @@ def main():
         entry_points=[CommandHandler('ifc', ifc_start)],
         states = {
             GET_IFC_RESPONSE: [MessageHandler(Filters.regex(''), get_ifc_response)],
-            GET_STRETCH_PARAMETERS: [MessageHandler(Filters.regex(''), get_stretch_parameters)]
+            GET_STRETCH_PARAMETERS: [MessageHandler(Filters.regex(''), get_stretch_parameters)],
+            GET_IFC_FILE: [MessageHandler(Filters.regex(''), get_ifc_file)],
+            GET_STRETCHED_NAME: [MessageHandler(Filters.regex(''), get_stretched_name)],
+            SAVE_STRETCHED: [MessageHandler(Filters.regex(''), save_stretched)]
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )

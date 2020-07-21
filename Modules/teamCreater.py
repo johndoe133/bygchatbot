@@ -52,10 +52,10 @@ def number_groups(update,context):
     logger.info('user %s wants to create %s teams', user.name, counter)
     try: 
         counter = int(counter)-1
-        update.message.reply_text(f'Write group {group_no}\'s group name')
+        update.message.reply_text(f'Write group {group_no}\'s group name. If you\'d like to cancel, text cancel instead.', reply_markup=ReplyKeyboardRemove())
         return NAME_GROUP
     except:
-        update.message.reply_text('Not a valid number')
+        update.message.reply_text('Not a valid number', reply_markup=ReplyKeyboardRemove())
         logger.info('not a number', user.name)
     return ConversationHandler.END 
 
@@ -70,6 +70,9 @@ def name_group(update,context):
     #logger.info('user %s is now naming %s teams', user.name, number)
     
     groupName = update.message.text
+    if (groupName.lower() == 'cancel'):
+        update.message.reply_text('Cancelling transaction. Type /teamstart to try again. ', reply_markup=ReplyKeyboardRemove())
+        return ConversationHandler.END
     update.message.reply_text(f"Group {group_no}\'s name is {groupName}")
     teams['sprint_duration'] = 1
     teams['first_sprint'] = ""
