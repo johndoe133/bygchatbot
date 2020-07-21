@@ -61,6 +61,7 @@ def from_group(update,context):
     for i in range(1,1+len(teams["teams"][group]["tasks"])):
         tasks += f"  {i}: {teams['teams'][group]['tasks'][i-1]}\n"
         reply_keyboard += [str(i)]
+    reply_keyboard += ["Cancel"]
     update.message.reply_text(tasks, )
 
     
@@ -72,7 +73,13 @@ def from_group(update,context):
 index = ""
 def choose_task(update, context):
     global index
-    index = int(update.message.text)-1
+    index = update.message.text
+    if (index.lower() == "cancel"):
+        update.message.reply_text("No task has been removed")
+        return ConversationHandler.END
+
+    index = int(index)-1
+
     task = teams['teams'][group]['tasks'][index]
     desc = teams['teams'][group]['descriptions'][index]
     #setup for confirm
