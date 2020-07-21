@@ -15,7 +15,7 @@ def view_team(update, context):
     view_string += f'{"Groups":<18}:\n'
     view_string += '-'*25
     for team_no, team in enumerate(teams['teams']):
-        view_string += f'\n{"  Group number":<18}: {team_no}\n'
+        view_string += f'\n{"  Group number":<18}: {team_no+1}\n'
         view_string += f'{"  Group name":<18}: {team["group_name"]}\n'
         view_string += f'{"  Group members":<18}:\n'
         if (len(team['group_members']) == 0):
@@ -31,7 +31,7 @@ def view_team(update, context):
     update.message.reply_text(view_string)
 
 
-    reply_keyboard = [[str(i) for i in range(len(teams["teams"]))], ["All","Cancel"]]
+    reply_keyboard = [[str(i+1) for i in range(len(teams["teams"]))], ["All","Cancel"]]
     update.message.reply_text("Would you like to view a team with more detail?", 
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
 
@@ -48,7 +48,7 @@ def detailed_view(update,context):
         view_string += f'{"Groups":<18}:\n'
         view_string += '-'*25
         for team_no, team in enumerate(teams['teams']):
-            view_string += f'\n{"  Group number":<18}: {team_no}\n'
+            view_string += f'\n{"  Group number":<18}: {team_no+1}\n'
             view_string += f'{"  Group name":<18}: {team["group_name"]}\n'
             view_string += f'{"  Group members":<18}:\n'
             if (len(team['group_members']) == 0):
@@ -74,12 +74,12 @@ def detailed_view(update,context):
         view_string += '</code>'
         update.message.reply_text(view_string)
     
-    elif (choice in [str(i) for i in range(len(teams["teams"]))]):
-        choice = int(choice)
+    elif (choice in [str(i) for i in range(1,1+len(teams["teams"]))]):
+        choice = int(choice) - 1
         team = teams["teams"][choice]
         view_string = "<code>"
         view_string += f"{'Sprint duration':<18}: {teams['sprint_duration']}\n"
-        view_string += f'\n{"Group number":<18}: {choice}\n'
+        view_string += f'\n{"Group number":<18}: {choice+1}\n'
         view_string += f'{"Group name":<18}: {teams["teams"][choice]["group_name"]}\n'
         view_string += '-'*25
 
@@ -107,9 +107,6 @@ def detailed_view(update,context):
         
         view_string += '</code>'
         update.message.reply_text(view_string)
-
-
-
 
 
     return ConversationHandler.END 

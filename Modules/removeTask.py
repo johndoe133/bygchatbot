@@ -31,7 +31,7 @@ def remove_task(update, context):
     with open('teams.json') as json_file:
         teams = json.load(json_file)
     reply_keyboard = []
-    for i in range(len(teams["teams"])):
+    for i in range(1,1+len(teams["teams"])):
         reply_keyboard += [str(i)]
 
     update.message.reply_text("From which group would you like to remove a task?",
@@ -44,7 +44,7 @@ group = 0
 def from_group(update,context):
     global group
     global teams
-    group = int(update.message.text)
+    group = int(update.message.text)-1
 
 
     #setup for choose task
@@ -57,8 +57,9 @@ def from_group(update,context):
         teams = json.load(json_file)
     tasks = "<u>Tasks:</u> \n"
     reply_keyboard = []
-    for i in range(len(teams["teams"][group]["tasks"])):
-        tasks += f"  {i}: {teams['teams'][group]['tasks'][i]}\n"
+
+    for i in range(1,1+len(teams["teams"][group]["tasks"])):
+        tasks += f"  {i}: {teams['teams'][group]['tasks'][i-1]}\n"
         reply_keyboard += [str(i)]
     update.message.reply_text(tasks, )
 
@@ -71,7 +72,7 @@ def from_group(update,context):
 index = ""
 def choose_task(update, context):
     global index
-    index = int(update.message.text)
+    index = int(update.message.text)-1
     task = teams['teams'][group]['tasks'][index]
     desc = teams['teams'][group]['descriptions'][index]
     #setup for confirm

@@ -3,20 +3,22 @@
         {
             "group_name": "a",
             "group_id": 1,
-            "group_members": [],
+            "group_members": [
+                "Adam Beilin"
+            ],
             "tasks": [
-                "ADd a task"
+                "tester2",
+                "task3"
             ],
             "descriptions": [
-                "description"
+                "TEEEEST2",
+                "testtask3"
             ]
         },
         {
             "group_name": "b",
             "group_id": 2,
-            "group_members": [
-                "Eric Kastl Jensen"
-            ],
+            "group_members": [],
             "tasks": [],
             "descriptions": []
         },
@@ -26,6 +28,24 @@
             "group_members": [],
             "tasks": [],
             "descriptions": []
+        },
+        {
+            "group_name": "d",
+            "group_id": 4,
+            "group_members": [],
+            "tasks": [],
+            "descriptions": []
+        },
+        {
+            "group_name": "e",
+            "group_id": 5,
+            "group_members": [],
+            "tasks": [
+                "test"
+            ],
+            "descriptions": [
+                "test1"
+            ]
         }
     ],
     "sprint_duration": 1,

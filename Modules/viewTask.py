@@ -28,13 +28,15 @@ def view_task(update, context):
 
     tasks_string = ""
 
-    reply_keyboard = []
+    #reply_keyboard = []
     for i in range(len(teams["teams"])):
-        tasks_string += f"<u>Group {i}: {teams['teams'][i]['group_name']}</u>\n"
-        reply_keyboard += [str(i)]
+        tasks_string += f"<u>Group {i+1}: {teams['teams'][i]['group_name']}</u>\n"
+        #reply_keyboard += [str(i)]
         for j in range(len(teams["teams"][i]["tasks"])):
-            tasks_string += f"  {j}: {teams['teams'][i]['tasks'][j]}\n"
-            reply_keyboard += [str(j)]
+            tasks_string += f"  {j+1}: {teams['teams'][i]['tasks'][j]}\n"
+            tasks_string += "      "+teams['teams'][i]['descriptions'][j] +"\n"
+
+            #reply_keyboard += [str(j)]
     update.message.reply_text(tasks_string)
 
 
