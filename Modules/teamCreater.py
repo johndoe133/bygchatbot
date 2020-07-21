@@ -41,7 +41,7 @@ def create_team(update, context):
     return NUMBER_GROUPS
     
 
-counter = 0
+counter = 1
 group_no = 1
 def number_groups(update,context):    
     user = update.message.from_user
@@ -89,6 +89,9 @@ def name_group(update,context):
     if (counter <= 0):
         with open('teams.json', 'w') as outfile:
             json.dump(teams, outfile, indent = 4)
+        
+        counter = 1
+        group_no = 1
         return ConversationHandler.END 
     else:
         counter-=1

@@ -27,8 +27,8 @@ def join_team(update, context):
     logger.info(f"{update.message.from_user.name} is joining team number "+ str(counter))
     team_names = "<u>Teams:</u> \n"
     reply_keyboard = []
-    for i in range(len(teams["teams"])):
-        team_names += f"  {i}: {teams['teams'][i]['group_name']}\n"
+    for i in range(1,1+len(teams["teams"])):
+        team_names += f"  {i}: {teams['teams'][i-1]['group_name']}\n"
         reply_keyboard += [str(i)]
     update.message.reply_text(team_names)
 
@@ -48,7 +48,7 @@ def choose_team(update, context):
         update.message.reply_text('Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
     try:
-        team_no = int(team_no)
+        team_no = int(team_no)-1
     except:
         update.message.reply_text('Not a number. Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END

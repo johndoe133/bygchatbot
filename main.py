@@ -22,6 +22,8 @@ from Modules.viewTask import *
 from Modules.teamGeneral import *
 from Modules.ifc import *
 from Modules.file_management import *
+from Modules.help import *
+
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -194,6 +196,13 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    conv_handler_help = ConversationHandler(
+        entry_points=[CommandHandler('help', help)],
+        states = {},
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
     dp.add_handler(conv_handler_agile_help)
@@ -208,6 +217,7 @@ def main():
     dp.add_handler(conv_handler_team_general)
     dp.add_handler(conv_handler_ifc)
     dp.add_handler(conv_handler_file_management)
+    dp.add_handler(conv_handler_help)
 
 
     # log all errors

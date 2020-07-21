@@ -54,8 +54,8 @@ def add_description(update, context):
     team_names = "<u>Groups:</u> \n"
     reply_keyboard = []
     for i in range(len(teams["teams"])):
-        team_names += f"  {i}: {teams['teams'][i]['group_name']}\n"
-        reply_keyboard += [str(i)]
+        team_names += f"  {i+1}: {teams['teams'][i]['group_name']}\n"
+        reply_keyboard += [str(i+1)]
     update.message.reply_text(team_names)
 
     update.message.reply_text("Which group would you like to assign this task to? ",
@@ -74,7 +74,7 @@ def to_group(update, context):
     global description
 
     try:
-        group = int(group)
+        group = int(group)-1
     except:
         update.message.reply_text('Not a number. Cancelling transaction. Type /teamstart to try again.', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
