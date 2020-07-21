@@ -30,8 +30,14 @@ def view_team(update, context):
     view_string += '</code>'
     update.message.reply_text(view_string)
 
+    reply_keyboard = []
+    for i in range(len(teams['teams'])):
+        if (i % 8 == 0):
+            reply_keyboard += [[]]
+        reply_keyboard[int(i / 8)] += [str(i+1)]
 
-    reply_keyboard = [[str(i+1) for i in range(len(teams["teams"]))], ["All","Cancel"]]
+    reply_keyboard += [["All", "Cancel"]]
+    
     update.message.reply_text("Would you like to view a team with more detail?", 
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
 
