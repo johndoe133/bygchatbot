@@ -22,7 +22,7 @@ file_type = ""
 def show_all_file_type(j, file_type):
     output = ""
     for file in j[file_type]:
-        output += f'*{file["name"]}\n  Uploaded by {file["uploaded_by"]}\n  {file["date"]}\n  Description: {file["description"]}\n\n'        
+        output += f'\u2022 <u>Name</u>: {file["name"]}\n  Uploaded by {file["uploaded_by"]}\n  {file["date"]}\n  Description: {file["description"]}\n\n'        
     return output
 
 def show_what(update, context):
