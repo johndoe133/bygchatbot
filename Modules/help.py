@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 def help(update, context):
 
 
+
+
     helpstring = "Here is an overview of all callable commands:  \n \n"
 
     helpstring += "/Teamstart: \n"

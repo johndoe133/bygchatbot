@@ -191,7 +191,10 @@ def main():
         entry_points=[CommandHandler('filemanage', show_what)],
         states = {
             SHOW: [MessageHandler(Filters.regex(''), show)],
-            SEND_FILE: [MessageHandler(Filters.regex(''), send_file)]
+            SEND_FILE: [MessageHandler(Filters.regex(''), send_file)],
+            CHOOSE_FILE: [MessageHandler(Filters.regex(''), choose_file)],
+            DEL_FILE: [MessageHandler(Filters.regex(''), del_file)],
+            DELETE: [MessageHandler(Filters.regex(''), delete)]
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )

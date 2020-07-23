@@ -112,7 +112,7 @@ def get_name(update, context):
     global file_type
     global file_name
     file_name = update.message.text
-    if (file_name is None):
+    if (file_name is None or file_name.lower() == "cancel"):
         update.message.reply_text("Invalid title! Cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
     update.message.reply_text('Enter a description: ')

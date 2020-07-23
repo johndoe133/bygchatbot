@@ -15,7 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-SHOW, SEND_FILE = range(2)
+SHOW, SEND_FILE, CHOOSE_FILE, DEL_FILE, DELETE = range(5)
 
 file_type = ""
 
@@ -30,6 +30,7 @@ def show_what(update, context):
     update.message.reply_text("Please select which file type you'd like to see",
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return SHOW
+
 
 def show(update ,context):
     global file_type
@@ -49,10 +50,41 @@ def show(update ,context):
         "View other file formats with /filemanage or upload a new file with /sendfile", reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
 
+    reply_keyboard = [['Download','Delete','Cancel']]
+    update.message.reply_text("Would you like to download a file, or remove a file",
+    reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+
+    return CHOOSE_FILE
+
+def choose_file(update, comtext):
+    global file_type
+    option = update.message.text
+    option = option.lower()
+    print(option)
+    print(file_type)
+
+    j = getJson(files_dir / 'files.json')
+
+
+    if (option == "download"):
+        pass
+    elif (option == "delete"):
+        pass
+    elif (option ==  "cancel"):
+        update.message.reply_text("You have chosen to cancel the operation")
+        return ConversationHandler.END
+    else: 
+        update.message.reply_text("Invalid option, operation cancelled")
+        return ConversationHandler.END
+
     try:
         update.message.reply_text(show_all_file_type(j, file_type))
-        update.message.reply_text('Which file would you like to download? Type the name of the file', reply_markup=ReplyKeyboardRemove())
-        return SEND_FILE
+        update.message.reply_text('Which file would you like to ' + option +'? Type the name of the file', reply_markup=ReplyKeyboardRemove())
+        if (option == "download"):
+            return SEND_FILE
+        elif (option == "delete"):
+            update.message.reply_text("If you do not wish to delete a file, type cancel")
+            return DEL_FILE
     except Exception as e:
         logger.info(e)
         update.message.reply_text('Invalid file type!')
@@ -81,4 +113,37 @@ def send_file(update, context):
         filename=j[index]['name']+ '.' + j[index]['file_name'].split('.')[-1])
     return ConversationHandler.END
 
+file_name=""
+def del_file(update, context):
+    global file_name
+    file_name = update.message.text
+    file_name = file_name.lower()
+    # send the file to the user
+    j = getJson(files_dir / 'files.json')
+    try:
+        index = [index for index, item in enumerate(j[file_type]) if item['name'].lower() == file_name][0]
+        reply_keyboard = [['Yes','No']]
+        update.message.reply_text("Are you sure you would like to remove this file?",
+        reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
+        return DELETE
+    except:
+        update.message.reply_text('No file with this filename')
+        
+    return ConversationHandler.END
 
+
+def delete(update,context):
+    global file_name
+    confirm = update.message.text
+    confirm = confirm.lower()
+    if (confirm == "yes"):
+        j = getJson(files_dir / 'files.json')
+        index = [index for index, item in enumerate(j[file_type]) if item['name'].lower() == file_name][0]
+        del j[file_type][index]        
+        with Path(files_dir / 'files.json').open(mode='w') as outfile:
+            json.dump(j, outfile, indent=4)
+        update.message.reply_text("file has been deleted")
+    else:
+        update.message.reply_text("The file has NOT been deleted")
+
+    return ConversationHandler.END
