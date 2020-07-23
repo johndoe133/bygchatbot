@@ -201,7 +201,7 @@ def main():
     )
 
     conv_handler_help = ConversationHandler(
-        entry_points=[CommandHandler('help', help)],
+        entry_points=[CommandHandler('help', help), CommandHandler('start', help)],
         states = {},
         fallbacks=[CommandHandler('cancel', cancel)]
     )
