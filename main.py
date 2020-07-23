@@ -63,7 +63,8 @@ def main():
             REQUEST_FILE: [MessageHandler(Filters.all, request_file)],
             GET_A_FILE: [MessageHandler(Filters.all, get_a_file)],
             GET_NAME: [MessageHandler(Filters.all, get_name)],
-            GET_DESCRIPTION: [MessageHandler(Filters.all, get_description)]
+            GET_DESCRIPTION: [MessageHandler(Filters.all, get_description)],
+            GET_NEW_CATEGORY: [MessageHandler(Filters.all, get_new_category)]
         },
         fallbacks=[CommandHandler('cancel', cancel)]
     )

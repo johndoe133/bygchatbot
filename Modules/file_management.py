@@ -26,7 +26,13 @@ def show_all_file_type(j, file_type):
     return output
 
 def show_what(update, context):
-    reply_keyboard = [['Image','Beats', 'IFC','Cancel']]
+    custom_file_categories = []
+    try:
+        custom_file_categories = getJson(files_dir / 'file_categories.json')
+    except:
+        custom_file_categories = []
+
+    reply_keyboard = [['Image','Beats', 'IFC'] + custom_file_categories, ['Cancel']]
     update.message.reply_text("Please select which file type you'd like to see",
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return SHOW
