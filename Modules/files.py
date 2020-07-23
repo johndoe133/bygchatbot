@@ -15,7 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-REQUEST_FILE, GET_A_FILE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION = range(6)
+REQUEST_FILE, GET_A_FILE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION, GET_NEW_CATEGORY = range(7)
 
 file_type = ""
 file_id = ""
@@ -40,12 +40,19 @@ def save_file_type(update, file_name, file_title, file_description, file_type, u
         update.message.reply_text(f'Uploading file as \'{file_name} ({counter})\'')
         file_name += f" ({counter})"
 
-    j[file_type].append({"name":file_name, "uploaded_by":user.name, "date":str(datetime.now()), 'file_id':file_id, 'file_name':file_title, 'description':file_description})
+    j[file_type].append({"name":file_name, "uploaded_by":user.name, "date":str(datetime.now()), 
+    'file_id':file_id, 'file_name':file_title, 'description':file_description})
     with Path(files_dir / 'files.json').open(mode='w') as outfile:
         json.dump(j, outfile, indent=4)
 
 def ask_file_type(update, context):
-    reply_keyboard = [['Image','Beats', 'IFC','Cancel']]
+    custom_file_categories = []
+    try:
+        custom_file_categories = getJson(files_dir / 'file_categories.json')
+    except:
+        custom_file_categories = []
+
+    reply_keyboard = [['Image','Beats', 'IFC'] + custom_file_categories, ['Add new category'], ['Cancel']]
     update.message.reply_text("Please select which file type you'd like to send",
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     return REQUEST_FILE
@@ -58,20 +65,49 @@ def request_file(update, context):
     response = update.message.text
     chat_id = update.message.chat_id
     file_type = response.lower()
-    if (file_type not in ['image','beats', 'ifc','cancel']):
-        update.message.reply_text('Invalid input. Send file cancelled. Type /sendfile to try again.', reply_markup=ReplyKeyboardRemove())
+
+    custom_file_categories = []
+
+    try:
+        custom_file_categories = getJson(files_dir / 'file_categories.json')
+    except:
+        custom_file_categories = []
+    print(file_type)
+    print(custom_file_categories)
+    if (file_type not in ['image','beats', 'ifc','cancel', 'add new category'] and file_type not in custom_file_categories):
+        update.message.reply_text('Invalid input. Send file cancelled. Type /sendfile to try again.', 
+        reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
     elif (file_type == 'cancel'):
-        update.message.reply_text('Send file cancelled. Type /sendfile to try again.', reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text('Send file cancelled. Type /sendfile to try again.', 
+        reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
-    update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'", reply_markup=ReplyKeyboardRemove())
+
+    elif (file_type == 'add new category'):
+        update.message.reply_text('Write a category name:')
+        return GET_NEW_CATEGORY
+    update.message.reply_text(f"Send a(n) {file_type} file to me, if you would like to cancel type 'cancel'", 
+    reply_markup=ReplyKeyboardRemove())
     if (file_type == 'image'):
         update.message.reply_text("Make sure to send it as a photo, not as a file")
     return GET_A_FILE
 
+def get_new_category(update, context):
+    category = update.message.text
+    category = category.lower()
+    try:
+        categories = getJson(files_dir / 'file_categories.json')
+    except:
+        categories = []
+    categories += [category]
+    with open(files_dir / 'file_categories.json', 'w') as outfile:
+        json.dump(categories, outfile, indent=4)
+    update.message.reply_text('Success! Use /sendfile to send a file of your new category. ')
+    return ConversationHandler.END
+
 def get_a_file(update, context):
-    if (file_type not in ['image', 'beats', 'ifc']):
-        return ConversationHandler.END
+    # if (file_type not in ['image', 'beats', 'ifc']):
+    #     return ConversationHandler.END
 
     #logging
     user = update.message.from_user
@@ -96,7 +132,8 @@ def get_a_file(update, context):
             valid = (validate_beats(temp_json))
             if (valid != "valid"):
                 logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
-                update.message.reply_text("Invalid beats file due to " + valid + ", cancelling file upload. Type /sendfile to try again")
+                update.message.reply_text("Invalid beats file due to " + valid + 
+                ", cancelling file upload. Type /sendfile to try again")
                 return ConversationHandler.END
         Path(Path.cwd() / file_title).replace(files_dir / file_title)
         update.message.reply_text(f"{file_type[0].upper()}{file_type[1:]} acquired!")
