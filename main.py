@@ -23,6 +23,7 @@ from Modules.teamGeneral import *
 from Modules.ifc import *
 from Modules.file_management import *
 from Modules.help import *
+from Modules.agile_guide import *
 
 
 # Enable logging
@@ -68,7 +69,7 @@ def main():
     )
 
     conv_handler_agile_help = ConversationHandler(
-        entry_points=[CommandHandler('helpagile', help_agile)],
+        entry_points=[CommandHandler('agileterms', help_agile)],
         states = {
             DEFINE: [MessageHandler(Filters.regex(''), define)],
             DEFINE_ADDITIONAL: [MessageHandler(Filters.regex(''), define_additional)]
@@ -202,6 +203,14 @@ def main():
         fallbacks=[CommandHandler('cancel', cancel)]
     )
 
+    conv_handler_guidance = ConversationHandler(
+        entry_points=[CommandHandler('agileguide', agile_guide_start)],
+        states = {
+            AGILE_GUIDANCE: [MessageHandler(Filters.regex(''), agile_guidance)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
 
     dp.add_handler(conv_handler_info)
     dp.add_handler(conv_handler_file)
@@ -218,7 +227,7 @@ def main():
     dp.add_handler(conv_handler_ifc)
     dp.add_handler(conv_handler_file_management)
     dp.add_handler(conv_handler_help)
-
+    dp.add_handler(conv_handler_guidance)
 
     # log all errors
     dp.add_error_handler(error)
