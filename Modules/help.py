@@ -21,23 +21,28 @@ def help(update, context):
 
     helpstring = "Here is an overview of all callable commands:  \n \n"
 
-    helpstring += "/Teamstart: \n"
-    helpstring += "This feature lets you create groups, for any user to join, as well as add or remove tasks to each of the groups. Sprint durations can be set and changed here as well, which provides reminders for upcoming meetings \n"
+    helpstring += "/teamstart: \n"
+    helpstring += 'Lets you create groups, for any user to join, as well as add or remove tasks to each of the groups. '
+    helpstring += 'Sprint durations can be set and changed here as well, which provides reminders for upcoming meetings \n\n'
 
-    helpstring += "/Agilehelp: \n"
-    helpstring += "This feature can provide you with definitions of key agile terminology \n"
+    helpstring += "/agileterms: \n"
+    helpstring += "Provides definitions of key agile terminology \n\n"
 
     helpstring += "/Sendfile: \n"
-    helpstring += "This feature allows you to send files, such as images, beats.json, and IFC.json, to be stored by the chatbot \n"
+    helpstring += "Allows you to send files, such as images, beats.json, and IFC.json, to be stored by the chatbot \n"
 
-    helpstring += "/Filemanage: \n"
-    helpstring += "This feature lets you access all files stored by the chatbot \n"
+    helpstring += "/filemanage: \n"
+    helpstring += "Access all files stored by the chatbot \n\n"
 
     helpstring += "/IFC: \n"
-    helpstring += "This feature allows you to get an analysis of any stored IFC.json file, along with giving an option to view a 3D model of this file. An option to stretch a 3D model is also available here.\n"
+    helpstring += 'Get an analysis of any stored IFC.json file, along with giving an option to view a 3D model of this file. '
+    helpstring += 'An option to stretch a 3D model is also available here.\n\n'
 
-    helpstring += "/Viewbeats: \n"
-    helpstring += "This feature allows you to view and get an analysis of any stored beats.json file \n"
+    helpstring += "/viewbeats: \n"
+    helpstring += "View and get an analysis of any stored beats.json file \n\n"
+
+    helpstring += "/agileguide: \n"
+    helpstring += "Get a quick tutorial on what agile is"
 
 
     update.message.reply_text(helpstring)
