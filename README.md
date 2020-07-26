@@ -17,6 +17,7 @@ help - Get an overview of all commands (same as start)
 viewbeats - Get information on beats
 sendfile - Send a file to bot
 agileterms - Get some definitions on agile terminology
+agileguide - A quick guide to the core principals of agile
 define - Define a specific agile term
 ifc - View and edit ifc file
 filemanage - Manage files uploaded to the bot
