@@ -202,7 +202,7 @@ def ifc_start(update, context):
             return ConversationHandler.END
         update.message.reply_text('Which IFC file would you like to load? Type the name of the file')
         return GET_IFC_FILE
-    reply_keyboard = [['Load an IFC file'], ['View', 'View wire frame'], ['Get analysis', 'Stretch']]
+    reply_keyboard = [['Load an IFC file', 'Get .ply file'], ['View', 'View wire frame'], ['Get analysis', 'Stretch']]
     update.message.reply_text('What would you like to do?',
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
     
@@ -228,6 +228,7 @@ def get_ifc_response(update, context):
         show_building(mesh)
         bot = context.bot
         [bot.send_photo(chat_id=chat_id, photo=open(f'{i}.png', 'rb')) for i in range(1, 5)]
+
         return ConversationHandler.END
     elif (option == 'Get analysis'):
         return start_analysis(update, context)
@@ -251,6 +252,18 @@ def get_ifc_response(update, context):
         bot = context.bot
         [bot.send_photo(chat_id=chat_id, photo=open(f'{i}.png', 'rb')) for i in range(1, 5)]
         return ConversationHandler.END
+    elif (option == 'Get .ply file'):
+        #send ply file
+        bot = context.bot
+        # try:
+        #     bot.send_document(chat_id=chat_id, document=open("ply0.ply",'rb'))
+        #     return ConversationHandler.END
+        all_points, all_triangles = get_all_triangles_points(files_dir / ifc_file_name)
+        get_mesh(all_points, all_triangles)
+        
+        bot.send_document(chat_id=chat_id, document=open("ply0.ply",'rb'))
+        return ConversationHandler.END
+       
     else:
         update.message.reply_text('Invalid option', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
