@@ -1,4 +1,4 @@
-from beats import (token, getJson, getVolume, getVolume, getFloorArea, getHeight)
+from Modules.beats import (token, getJson, getVolume, getVolume, getFloorArea, getHeight)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode)

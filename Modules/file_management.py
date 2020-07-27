@@ -4,8 +4,6 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, File)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 from beats import token, getJson
-import urllib
-import requests
 from pathlib import Path
 
 files_dir = Path.cwd() / 'Files'
