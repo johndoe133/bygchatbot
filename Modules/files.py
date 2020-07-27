@@ -120,6 +120,7 @@ def get_a_file(update, context):
         if file_type == 'beats':
             temp_json = getJson(Path.cwd() / file_title)
             valid = (validate_beats(temp_json))
+
             if (valid != "valid"):
                 logger.info('Beats acquired from %s were invalid. Reason %s', user.first_name, valid)
                 update.message.reply_text("Invalid beats file due to " + valid + 
@@ -207,16 +208,41 @@ def validate_beats(obj):
         return "valid"
 
 def check_team_duplicates(json_obj):
-    for index, team in enumerate(json_obj):
-        for i in range(index+1, len(json_obj)):
-            if (team["team"] == json_obj[i]['team']):
-                return True
+    for index, item in enumerate(json_obj):
+        original_team_name = item['team']
+        matches = [team['team'] for team in json_obj if team['team'] == original_team_name]
+        if len(matches) > 1:
+            return True
+        elif len(matches) == 1:
+            pass
+        else:
+            raise Exception('No matches to team?? files.py line 226')
     return False
+    # for index in range(len(json_obj)-1):
+    #     print(index)
+    #     team = json_obj[index]
+    #     for i in range(index+1, len(json_obj)):
+    #         if (team["team"] == json_obj[i]['team']):
+    #             return True
+    # return False
 
 def check_id_duplicates(json_obj):
-    for team in json_obj:
-        for index, segment in enumerate(team['segments']):
-            for i in range(index+1, len(team['segments'])):
-                if (segment['id'] == json_obj[index]['segments'][i]['id']):
-                    return True
+    for index, item in enumerate(json_obj):
+        for segment in item['segments']:
+            original_id = segment['id']
+            matches = [s['id'] for s in item['segments'] if s['id'] == original_id]
+            if len(matches) > 1:
+                return True
+            elif len(matches) == 1:
+                pass
+            else:
+                raise Exception('No matches to id?? files.py line 247')
     return False
+
+    # for team in json_obj:
+    #     for index in range(len(team['segments'])-1):
+    #         segment = team['segments'][index]
+    #         for i in range(index+1, len(team['segments'])):
+    #             if (segment['id'] == json_obj[index]['segments'][i]['id']):
+    #                 return True
+    # return False
