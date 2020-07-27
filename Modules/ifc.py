@@ -328,6 +328,7 @@ def save_stretched(update, context):
     #     json.dump(j, outfile, indent=4)
     
     save_to_new_ifc(stretched_points, ifc_file_name, file_title)
+    context.user_data['file_id'] = 'blank'
     save_file_type(update, context, ifc_name, file_title + '.json', response, 'ifc', user)
     update.message.reply_text('Successfully saved IFC file! To view, use /ifc')
     return ConversationHandler.END
