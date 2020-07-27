@@ -344,16 +344,34 @@ def start_analysis(update, context):
             pass
         elif class_name in classes.keys():
             classes[class_name]['Count'] += 1
+            try:
+                classes[class_name]['Sum of PSet_Revit_Dimensions'] += item['PSet_Revit_Dimensions']
+            except:
+                pass
             if (class_name == 'Wall'):
                 if 'Volume' in item.keys():
                     classes[class_name]['Volume'] += item['Volume']
         else:
             classes[class_name] = {}
             classes[class_name]['Count'] = 1
+            try:
+                classes[class_name]['Sum of PSet_Revit_Dimensions'] = item['PSet_Revit_Dimensions']
+            except:
+                pass
             if (class_name == 'Wall'):
                 classes[class_name]['Volume'] = 0
                 if 'Volume' in item.keys():
                     classes[class_name]['Volume'] += item['Volume']
+
+    output = "<code>"
+    for class_key in classes.keys():
+        item = classes[class_key]
+        output += (f'\u2022 {class_key}\n')
+        for key in item.keys():
+            output += f'    {key:<32}: {item[key]}\n'
+        output += "\n"
+    output += "</code>"
     update.message.reply_text(classes)
+    update.message.reply_text(output)
     return ConversationHandler.END
 
