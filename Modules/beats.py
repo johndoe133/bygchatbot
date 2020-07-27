@@ -1,28 +1,10 @@
 from telegram.ext import (Updater, CommandHandler)
-import requests
 import json
 import re
 from uuid import uuid4
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
-
-def get_url():
-    contents = requests.get('https://random.dog/woof.json').json()
-    return contents['url']
-
-def get_image_url():
-    allowed_extensions = ['jpg','jpeg','png']
-    file_extension = ''
-    while file_extension not in allowed_extensions:
-        url = get_url()
-        file_extension = re.search("([^.]*)$",url).group(1).lower()
-    return url
-
-def bop(bot, update):
-    url = get_image_url()
-    chat_id = update.message.chat_id
-    bot.send_photo(chat_id=chat_id, photo=url)
 
 def getArgs(update):
     key = str(uuid4())

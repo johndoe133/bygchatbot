@@ -103,7 +103,7 @@ def draw_building_colored(o, r, color_id):
 
     meshes = [mesh, mesh_color]
     
-    o3d.visualization.draw_geometries(meshes)
+    o3d.visualization.draw_geometries(meshes, mesh_show_back_face=True)
 
 def draw_building_no_windows():
     counter = 0
@@ -154,7 +154,7 @@ def draw_building(o, r):
     ply1.write('ply1.ply')
     mesh =  o3d.io.read_triangle_mesh("ply1.ply")
     mesh.compute_vertex_normals()
-    o3d.visualization.draw_geometries([mesh])
+    o3d.visualization.draw_geometries([mesh], mesh_show_back_face=True)
     return mesh
 
 def draw_item(o, r, id):
@@ -197,25 +197,59 @@ def stretch_wall(o, r, key_wall, factor):
         vertices = r[key]['Vertices']
         current_min_z = find_min_z(vertices)
         current_max_z = find_max_z(vertices)
-        if (current_min_z >= min_z and current_max_z <= max_z):
-            # Item is within z boundaries of wall, stretch by same factor
+        if (key == shape_id):
+            print('found item')
+            # We found the item, stretch it by factor
             shape_rep = r[key]
             vertices = shape_rep['Vertices']
             vertices = stretch_vertices(vertices, factor, current_min_z)
             r[key]['Vertices'] = vertices
+
+        elif (current_min_z >= min_z and current_max_z <= max_z):
+            # Item is within z boundaries of wall, stretch by a new factor such that 
+            # it is elongated by the same amount
+            # print(f'1. stretch: {key}')
+
+            # f = (factor * (max_z-min_z) + (current_max_z - current_min_z))/(max_z-min_z)
+            f = ((max_z-min_z) * (factor - 1) + (current_max_z- current_min_z))/(current_max_z-current_min_z)
+            shape_rep = r[key]
+            vertices = shape_rep['Vertices']
+            vertices = stretch_vertices(vertices, f, current_min_z)
+            r[key]['Vertices'] = vertices
+            # shape_rep = r[key]
+            # vertices = shape_rep['Vertices']
+            # vertices = stretch_vertices(vertices, factor, current_min_z)
+            # r[key]['Vertices'] = vertices
+
         elif (current_min_z >= max_z):
+            # print(f'2. stretch: {key}')
             # Item is above wall, move upwards
             shape_rep = r[key]
             vertices = shape_rep['Vertices']
             vertices = move_vertices(vertices, amt)
             r[key]['Vertices'] = vertices
-        elif (current_max_z+2 >= max_z):
-            # item's top is above bounds of wall, so we stretch it 
+
+        elif (current_max_z >= max_z and current_min_z <= min_z):
+            # print(f'3. stretch: {key}')
+            # item's top is above bounds of wall, and bottom is below bounds of wall, so we stretch it 
             # such that the height added to it is the same as the height added to the wall
-            f = (factor * (max_z-min_z) + (current_max_z - current_min_z))/(current_max_z-current_min_z)
+            
+
+            # f = (factor * (max_z-min_z) + (current_max_z - current_min_z))/(max_z-min_z)
+            f = ((max_z-min_z) * (factor - 1) + (current_max_z- current_min_z))/(current_max_z-current_min_z)
             shape_rep = r[key]
             vertices = shape_rep['Vertices']
             vertices = stretch_vertices(vertices, f, current_min_z)
+            r[key]['Vertices'] = vertices
+
+        elif (current_max_z >= max_z and current_min_z <= max_z and current_min_z >= min_z):
+            # Item's top is above bounds of wall, but bottom is within bounds of wall
+            # Therefore, we move it upwards by amt
+            shape_rep = r[key]
+            vertices = shape_rep['Vertices']
+            vertices = move_vertices(vertices, amt)
+            r[key]['Vertices'] = vertices
+
         # elif (current_max_z <= max_z and current_min_z <= min_z):
         #     spec_factor = (1+amt)/(current_max_z-current_min_z)
         #     shape_rep = r[key]
@@ -224,8 +258,6 @@ def stretch_wall(o, r, key_wall, factor):
         #     r[key]['Vertices'] = vertices
         
         else:
-            # Assuming nothing with a lower z value that min_z and higher z value than max_z exists
-            # It must be below the wall we want to stretch
             pass
     shape_id = o[key_wall]['Representations'][0]['ref']
     shape_rep = r[shape_id]
@@ -240,19 +272,26 @@ if __name__ == "__main__":
     r = ifc['ShapeRepresentations']
     r = copy.deepcopy(r)
     # this one worked with +0.1: 32c6a8a1-ae87-4d92-b022-03fbfb4828fb
-    # for id in o:
-    #     if (o[id]['Class'] == 'Wall'):
-    #         print(f'id: {id}')
-    #         print(f'type: {o[id]["ObjectType"]}')
-    #         r_stretched = stretch_wall(o, r, id, 4)
-    #         draw_building_colored(o, r_stretched, id)
-            # draw_building_colored(o, r, id)
+    
 
     # id = '32c6a8a1-ae87-4d92-b022-03fbfb4828fb'
-    id = '32c7ea80-153a-4e47-80b4-a2bcd0484492'
+    # id = '32c7ea80-153a-4e47-80b4-a2bcd0484492'
     # id = '32cb5b68-16d5-4078-b057-406131c7c505'
-    r_stretched = stretch_wall(o, r, id, 4)
+    # id = '32c6a4dc-d1c8-46d0-b03d-61195a824b41'
+    id = '32ca13cc-fe6e-4bdd-a0ef-933253365bfa' # TEST THIS ONE
+
+    factor = 1000
+
+    r_stretched = stretch_wall(o, r, id, factor)
+    # draw_building_colored(o, r, id)
     draw_building_colored(o, r_stretched, id)
+    for id in o:
+        if (o[id]['Class'] == 'Wall'):
+            print(f'\n\nid: {id}')
+            print(f'type: {o[id]["ObjectType"]}')
+            r_stretched = stretch_wall(o, r, id, factor)
+            draw_building_colored(o, r_stretched, id)
+            # draw_building_colored(o, r, id)
     
 
 
