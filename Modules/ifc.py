@@ -5,8 +5,8 @@ from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 from telegram import ParseMode
-from info import cancel
-from beats import getJson
+from Modules.info import cancel
+from Modules.beats import getJson
 import re
 import numpy as np
 import open3d as o3d

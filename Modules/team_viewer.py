@@ -1,10 +1,10 @@
-from beats import (token, getJson)
+from Modules.beats import (token, getJson)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
-from beats import getJson
+from Modules.beats import getJson
 
 DETAILED_VIEW = 8
 

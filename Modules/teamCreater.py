@@ -1,4 +1,4 @@
-from beats import (token, getJson)
+from Modules.beats import (token, getJson)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
@@ -6,10 +6,10 @@ from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
 #probably wont need all the extensions..
-from info import *
-from files import *
-from agile_help import *
-from define import *
+from Modules.info import *
+from Modules.files import *
+from Modules.agile_help import *
+from Modules.define import *
 
 
 # Enable logging

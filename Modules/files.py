@@ -3,7 +3,7 @@ import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove, File)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
-from beats import token, getJson
+from Modules.beats import token, getJson
 import jsonschema
 from jsonschema import validate
 from datetime import datetime

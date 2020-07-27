@@ -1,4 +1,4 @@
-from beats import (token, getJson)
+from Modules.beats import (token, getJson)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
@@ -9,11 +9,11 @@ from datetime import (datetime, timedelta)
 import pytz
 from queue import PriorityQueue
 
-from info import *
-from files import *
-from agile_help import *
-from define import *
-from teamCreater import *
+from Modules.info import *
+from Modules.files import *
+from Modules.agile_help import *
+from Modules.define import *
+from Modules.teamCreater import *
 
 
 # Enable logging

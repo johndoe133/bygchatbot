@@ -1,16 +1,16 @@
-from beats import (token, getJson)
+from Modules.beats import (token, getJson)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
-from info import *
-from files import *
-from agile_help import *
-from define import *
-from teamCreater import *
-from viewTask import *
+from Modules.info import *
+from Modules.files import *
+from Modules.agile_help import *
+from Modules.define import *
+from Modules.teamCreater import *
+from Modules.viewTask import *
 
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

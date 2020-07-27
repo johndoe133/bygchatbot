@@ -1,4 +1,4 @@
-from beats import (token, getJson)
+from Modules.beats import (token, getJson)
 import logging
 import json
 from telegram import (ReplyKeyboardMarkup, ReplyKeyboardRemove)
