@@ -29,6 +29,7 @@ Create a json file called `token.json` in the Root directory, and input the json
 
 ## Downloading packages
 `pip install python-telegram-bot --upgrade`
+`pip install jsonschema`
 
 ## Running the bot
 Run the main file, or write `python main.py` in the terminal
