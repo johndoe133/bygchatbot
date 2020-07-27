@@ -7,6 +7,9 @@ Co-supervisor - Andrea Burattin
 
 # Getting started
 How to run your own version of the bygchatbot
+
+IMPORTANT NOTE: Sometimes, when running the bot in the terminal, it will "pause". This is not because of the code, it has something to do with the terminal. If you notice the bot not responding, simply go to the terminal and press any key to unpause it. 
+
 ## Setting up the telegram bot
 Text the botfather (https://telegram.me/botfather) in telegram the command `/newbot` and follow the instructions. Take note of the bot's token.
 
@@ -28,10 +31,14 @@ teamstart - Manage your team
 Create a json file called `token.json` in the Root directory, and input the json object `{"token":"[YOUR TOKEN HERE]"}`
 
 ## Downloading packages
-```pip install python-telegram-bot --upgrade
+Note that downloading `open3d` might take a long time. 
+```
+pip install python-telegram-bot --upgrade
 pip install jsonschema
 pip install pytz
-
+pip install numpy
+pip install open3d
+pip install plyfile
 ```
 
 ## Running the bot
