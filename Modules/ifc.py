@@ -9,8 +9,6 @@ from info import cancel
 from beats import getJson
 import re
 import numpy as np
-from mpl_toolkits import mplot3d
-import matplotlib.pyplot as plt
 import open3d as o3d
 from plyfile import PlyData, PlyElement
 import os
