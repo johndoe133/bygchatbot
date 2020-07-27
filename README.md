@@ -25,10 +25,14 @@ teamstart - Manage your team
 ```
 
 ## Inserting bot token into your code
-Create a json file called `token.json` in the Modules directory, and input the json object `{"token":"[YOUR TOKEN HERE]"}`
+Create a json file called `token.json` in the Root directory, and input the json object `{"token":"[YOUR TOKEN HERE]"}`
 
 ## Downloading packages
-`pip install python-telegram-bot --upgrade`
+```pip install python-telegram-bot --upgrade
+pip install jsonschema
+pip install pytz
+
+```
 
 ## Running the bot
 Run the main file, or write `python main.py` in the terminal
