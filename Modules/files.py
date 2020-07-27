@@ -17,14 +17,10 @@ logger = logging.getLogger(__name__)
 
 REQUEST_FILE, GET_A_FILE, GET_BEATS, GET_IFC, GET_NAME, GET_DESCRIPTION, GET_NEW_CATEGORY = range(7)
 
-file_type = ""
-file_id = ""
-file_name = ""
 files_dir = Path.cwd() / 'Files'
-file_name = None
-file_title = None
 
-def save_file_type(update, file_name, file_title, file_description, file_type, user):
+def save_file_type(update, context, file_name, file_title, file_description, file_type, user):
+    file_id = context.user_data['file_id']
     j = getJson(files_dir / 'files.json')
     if not (file_type in j.keys()):
         j[file_type] = []
@@ -58,22 +54,17 @@ def ask_file_type(update, context):
     return REQUEST_FILE
 
 def request_file(update, context):
-    global file_type
-    #logging
-    user = update.message.from_user
-
     response = update.message.text
-    chat_id = update.message.chat_id
-    file_type = response.lower()
+    
+    context.user_data['file_type'] = response.lower()
+    file_type = context.user_data['file_type']
 
     custom_file_categories = []
-
     try:
         custom_file_categories = getJson(files_dir / 'file_categories.json')
     except:
         custom_file_categories = []
-    print(file_type)
-    print(custom_file_categories)
+
     if (file_type not in ['image','beats', 'ifc','cancel', 'add new category'] and file_type not in custom_file_categories):
         update.message.reply_text('Invalid input. Send file cancelled. Type /sendfile to try again.', 
         reply_markup=ReplyKeyboardRemove())
@@ -82,7 +73,6 @@ def request_file(update, context):
         update.message.reply_text('Send file cancelled. Type /sendfile to try again.', 
         reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
-
     elif (file_type == 'add new category'):
         update.message.reply_text('Write a category name:')
         return GET_NEW_CATEGORY
@@ -111,22 +101,23 @@ def get_a_file(update, context):
 
     #logging
     user = update.message.from_user
+    file_type = context.user_data['file_type']
     logger.info(f'User {user.first_name} is requested to send {file_type}')
-    global file_id
-    global file_name
-    global file_title
     bot = context.bot
 
     chat_id = update.message.chat_id
     try:
         if (file_type == 'image'):
-            file_id = update.message.photo[-1].file_id
+            context.user_data['file_id'] = update.message.photo[-1].file_id
+            
         else:
-            file_id =update.message.document.file_id
+            context.user_data['file_id'] = update.message.document.file_id
+        file_id = context.user_data['file_id']
         gen_file = bot.get_file(file_id)
         gen_file.download()
         logger.info(f'{file_type} successfully downloaded')
-        file_title = (str(gen_file.file_path).split('/'))[-1]
+        context.user_data['file_title'] = (str(gen_file.file_path).split('/'))[-1]
+        file_title = context.user_data['file_title']
         if file_type == 'beats':
             temp_json = getJson(Path.cwd() / file_title)
             valid = (validate_beats(temp_json))
@@ -146,9 +137,8 @@ def get_a_file(update, context):
         return ConversationHandler.END
 
 def get_name(update, context):
-    global file_type
-    global file_name
-    file_name = update.message.text
+    context.user_data['file_name'] = update.message.text
+    file_name = context.user_data['file_name']
     if (file_name is None or file_name.lower() == "cancel"):
         update.message.reply_text("Invalid title! Cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
@@ -156,9 +146,11 @@ def get_name(update, context):
     return GET_DESCRIPTION
 
 def get_description(update, context):
+    file_type = context.user_data['file_type']
+    file_name = context.user_data['file_name']
+    file_title = context.user_data['file_title']
     desc = update.message.text
     user = update.message.from_user
-    global file_name
     j = getJson(files_dir / 'files.json')
     if (desc is None):
         j[file_type].pop(-1)
@@ -166,7 +158,7 @@ def get_description(update, context):
             json.dump(j, outfile, indent=4)
         update.message.reply_text("Invalid description! Cancelling file upload. Type /sendfile to try again")
         return ConversationHandler.END
-    save_file_type(update, file_name, file_title, desc, file_type, user)
+    save_file_type(update, context, file_name, file_title, desc, file_type, user)
     update.message.reply_text('File uploaded! View your files with /filemanage')
     return ConversationHandler.END
     
