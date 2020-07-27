@@ -56,7 +56,6 @@ def main():
 
         fallbacks=[CommandHandler('cancel', cancel)]
     )
-
     conv_handler_file = ConversationHandler(
         entry_points=[CommandHandler('sendfile', ask_file_type)],
         states={
