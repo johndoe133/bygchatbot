@@ -5,10 +5,14 @@ Supervisor - Tim Pat McGinley
 
 Co-supervisor - Andrea Burattin
 
+# Example files
+In this repository, there is an example beats file, and an example IFC5 JSON file, called `beats.json` and `duplex_A.json`, respectively. 
+
 # Getting started
 How to run your own version of the bygchatbot
 
-IMPORTANT NOTE: Sometimes, when running the bot in the terminal, it will "pause". This is not because of the code, it has something to do with the terminal. If you notice the bot not responding, simply go to the terminal and press any key to unpause it. 
+IMPORTANT NOTE: Sometimes, when running the bot in the terminal, it will "pause". This is not because of the code, it has something to do with the terminal. If you notice the bot not responding, simply go to the terminal and press any key to unpause it. This problem does not occur if run in visual studio code. 
+
 
 ## Setting up the telegram bot
 Text the botfather (https://telegram.me/botfather) in telegram the command `/newbot` and follow the instructions. Take note of the bot's token.
@@ -43,3 +47,5 @@ pip install plyfile
 
 ## Running the bot
 Run the main file, or write `python main.py` in the terminal
+
+IMPORTANT NOTE: Sometimes, when running the bot in the terminal, it will "pause". This is not because of the code, it has something to do with the terminal. If you notice the bot not responding, simply go to the terminal and press any key to unpause it. This problem does not occur if run in visual studio code. 
