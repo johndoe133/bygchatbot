@@ -24,9 +24,8 @@ logger = logging.getLogger(__name__)
 #
 NUMBER_GROUPS,NAME_GROUP,MAKE_GROUP = range(5,8)
 
-teams ={}
 def create_team(update, context):
-    global teams
+    teams = {}
     teams['teams'] = []
 
     chat_id = update.message.chat_id
@@ -38,46 +37,46 @@ def create_team(update, context):
     #    json.dump(teams, outfile, indent = 4)
     
     update.message.reply_text('How many groups would you like to create?')
+    context.user_data['creator_teams'] = teams
+    context.user_data['creator_group_no'] = 1
     return NUMBER_GROUPS
     
 
-counter = 1
-group_no = 1
 def number_groups(update,context):    
     user = update.message.from_user
-    global counter
-    global group_no
+    group_no = context.user_data['creator_group_no']
     counter = update.message.text
-    
     logger.info('user %s wants to create %s teams', user.name, counter)
     try: 
         counter = int(counter)-1
         update.message.reply_text(f'Write group {group_no}\'s group name. If you\'d like to cancel, text cancel instead.', reply_markup=ReplyKeyboardRemove())
+        context.user_data['creator_counter'] = counter
         return NAME_GROUP
     except:
         update.message.reply_text('Not a valid number', reply_markup=ReplyKeyboardRemove())
         logger.info('not a number', user.name)
+    
     return ConversationHandler.END 
 
     
 
         
 def name_group(update,context):
-    global counter
-    global teams
-    global group_no
+    counter = context.user_data['creator_counter']
+    group_no = context.user_data['creator_group_no']
+    teams = context.user_data['creator_teams']
     #user = update.message.from_user
     #logger.info('user %s is now naming %s teams', user.name, number)
     
-    groupName = update.message.text
-    if (groupName.lower() == 'cancel'):
+    group_name = update.message.text
+    if (group_name.lower() == 'cancel'):
         update.message.reply_text('Cancelling transaction. Type /teamstart to try again. ', reply_markup=ReplyKeyboardRemove())
         return ConversationHandler.END
-    update.message.reply_text(f"Group {group_no}\'s name is {groupName}")
+    update.message.reply_text(f"Group {group_no}\'s name is {group_name}")
     teams['sprint_duration'] = 1
     teams['first_sprint'] = ""
     teams['teams'].append({
-        "group_name": groupName,
+        "group_name": group_name,
         "group_id": (group_no),
         "group_members" : [],
         "tasks" : [],
@@ -90,12 +89,13 @@ def name_group(update,context):
         with open('teams.json', 'w') as outfile:
             json.dump(teams, outfile, indent = 4)
         
-        counter = 1
-        group_no = 1
         return ConversationHandler.END 
     else:
         counter-=1
+        context.user_data['creator_counter'] = counter
+        context.user_data['creator_group_no'] = group_no
         update.message.reply_text(f"Write group {group_no}\'s group name")
+
         return NAME_GROUP
         #name_group(update,context)
 

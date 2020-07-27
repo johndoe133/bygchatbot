@@ -60,24 +60,3 @@ def getNum (bot, update):
     args = getArgs(update)
     number = bot.getChatMembersCount(chat_id)
     bot.send_message(chat_id=chat_id, text=number)
-
-
-
-def main():
-    updater = Updater(token)
-    dp = updater.dispatcher
-    dp.add_handler(CommandHandler('bop', bop))
-    dp.add_handler(CommandHandler('get', get))
-    dp.add_handler(CommandHandler('getHeight', getBuildingHeight))
-    dp.add_handler(CommandHandler('getFloorArea', getBuildingFloorArea))
-    dp.add_handler(CommandHandler('getVolume', getBuildingVolume))
-    dp.add_handler(CommandHandler('sendFile', download_file))
-
-    #temp
-    dp.add_handler(CommandHandler('number', getNum))
-
-    updater.start_polling()
-    updater.idle()
-    
-if __name__ == '__main__':
-    main()

@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 SHOW, SEND_FILE, CHOOSE_FILE, DEL_FILE, DELETE = range(5)
 
-file_type = ""
 
 def show_all_file_type(j, file_type):
     output = ""
@@ -37,9 +36,10 @@ def show_what(update, context):
 
 
 def show(update ,context):
-    global file_type
     file_type = update.message.text
     file_type = file_type.lower()
+    context.user_data['file_type'] = file_type
+
     j = getJson(files_dir / 'files.json')
     if file_type.lower() == 'cancel':
         update.message.reply_text("Cancelling transaction. \n"
@@ -55,18 +55,16 @@ def show(update ,context):
         return ConversationHandler.END
 
     reply_keyboard = [['Download','Delete','Cancel']]
+    update.message.reply_text(show_all_file_type(j, file_type))
     update.message.reply_text("Would you like to download a file, or remove a file",
     reply_markup=ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True))
 
     return CHOOSE_FILE
 
-def choose_file(update, comtext):
-    global file_type
+def choose_file(update, context):
+    file_type = context.user_data['file_type']
     option = update.message.text
     option = option.lower()
-    print(option)
-    print(file_type)
-
     j = getJson(files_dir / 'files.json')
 
 
@@ -82,7 +80,7 @@ def choose_file(update, comtext):
         return ConversationHandler.END
 
     try:
-        update.message.reply_text(show_all_file_type(j, file_type))
+        # update.message.reply_text(show_all_file_type(j, file_type))
         update.message.reply_text('Which file would you like to ' + option +'? Type the name of the file', reply_markup=ReplyKeyboardRemove())
         if (option == "download"):
             return SEND_FILE
@@ -96,7 +94,10 @@ def choose_file(update, comtext):
 
 def send_file(update, context):
     file_name = update.message.text
+    
+    file_type = context.user_data['file_type']
     file_name = file_name.lower()
+    context.user_data['file_name'] = file_name
     # send the file to the user
     chat_id = update.message.chat_id
     j = getJson(files_dir / 'files.json')[file_type]
@@ -117,11 +118,12 @@ def send_file(update, context):
         filename=j[index]['name']+ '.' + j[index]['file_name'].split('.')[-1])
     return ConversationHandler.END
 
-file_name=""
 def del_file(update, context):
-    global file_name
+    file_type = context.user_data['file_type']
     file_name = update.message.text
     file_name = file_name.lower()
+    context.user_data['file_name'] = file_name
+
     # send the file to the user
     j = getJson(files_dir / 'files.json')
     try:
@@ -137,7 +139,8 @@ def del_file(update, context):
 
 
 def delete(update,context):
-    global file_name
+    file_name = context.user_data['file_name']
+    file_type = context.user_data['file_type']
     confirm = update.message.text
     confirm = confirm.lower()
     if (confirm == "yes"):

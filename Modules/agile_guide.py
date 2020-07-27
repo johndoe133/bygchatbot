@@ -68,7 +68,7 @@ def agile_guidance(update, context):
     if (index == len(responses)-1):
         index = 0
         if (update.message.text == 'Cancel'):
-            update.message.reply_text('Agile walk through has been cancelled. Type /agile',
+            update.message.reply_text('Agile walk through has been cancelled. Type /agileguide to start again, or /agileterms to define any agile terms. ',
             reply_markup=ReplyKeyboardRemove())
         elif (update.message.text == 'Continue'):
             update.message.reply_text(response,

@@ -28,11 +28,10 @@ def assign_task(update,context):
     update.message.reply_text("What is the task that you want to add")
     return ADD_TASK
 
-task = ""
 description = ""
 def add_task(update,context):
-    global task
     task = update.message.text
+    context.user_data['task'] = task
 
 
     #setup for add description
@@ -42,15 +41,16 @@ def add_task(update,context):
 
 
 def add_description(update, context):
-    global counter
-    global teams
     
-    global description
     description = update.message.text
+    context.user_data['description'] = description
     
     #setup for choose group
     with open('teams.json') as json_file:
         teams = json.load(json_file)
+
+    context.user_data['teams'] = teams
+
     team_names = "<u>Groups:</u> \n"
     reply_keyboard = []
     for i in range(len(teams["teams"])):
@@ -66,12 +66,12 @@ def add_description(update, context):
 
 
 def to_group(update, context):
-    global teams
+    teams = context.user_data['teams']
 
     group = update.message.text
     
-    global task
-    global description
+    task = context.user_data['task']
+    description = context.user_data['description']
 
     try:
         group = int(group)-1

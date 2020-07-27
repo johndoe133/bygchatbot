@@ -24,12 +24,12 @@ FROM_GROUP, CHOOSE_TASK, CONFIRM = range(14,17)
 def remove_task(update, context):
 
     #setup for choose group
-    global teams
 
     view_task(update, context)
 
     with open('teams.json') as json_file:
         teams = json.load(json_file)
+    context.user_data['teams'] = teams
     reply_keyboard = []
     for i in range(1,1+len(teams["teams"])):
         reply_keyboard += [str(i)]
@@ -40,21 +40,16 @@ def remove_task(update, context):
 
     return FROM_GROUP
 
-group = 0
 def from_group(update,context):
-    global group
-    global teams
     group = int(update.message.text)-1
-
+    context.user_data['group'] = group
+    teams = context.user_data['teams']
 
     #setup for choose task
     if (teams["teams"][group]["tasks"]==[]):
         update.message.reply_text("This group does currently not have any assigned tasks")
         return ConversationHandler.END 
 
-    
-    with open('teams.json') as json_file:
-        teams = json.load(json_file)
     tasks = "<u>Tasks:</u> \n"
     reply_keyboard = []
 
@@ -70,15 +65,16 @@ def from_group(update,context):
 
     return CHOOSE_TASK
 
-index = ""
 def choose_task(update, context):
-    global index
+    teams = context.user_data['teams']
+    group = context.user_data['group']
     index = update.message.text
     if (index.lower() == "cancel"):
         update.message.reply_text("No task has been removed")
         return ConversationHandler.END
 
     index = int(index)-1
+    context.user_data['index'] = index
 
     task = teams['teams'][group]['tasks'][index]
     desc = teams['teams'][group]['descriptions'][index]
@@ -92,18 +88,19 @@ def choose_task(update, context):
     return CONFIRM
 
 def confirm(update, context):
-    global teams
-    global index
+    teams = context.user_data['teams']
+    group = context.user_data['group']
+    index = context.user_data['index']
 
     confirm = update.message.text
 
-    if (confirm != "Yes"):
+    if (confirm.lower() != "yes"):
         update.message.reply_text("You have chosen to NOT remove the task")
         return ConversationHandler.END
 
     del teams["teams"][group]["tasks"][index]
     del teams["teams"][group]["descriptions"][index]
-
+    context.user_data['teams'] = teams
 
     with open('teams.json', 'w') as outfile:    
         json.dump(teams, outfile, indent = 4)

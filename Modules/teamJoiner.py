@@ -20,13 +20,15 @@ logger = logging.getLogger(__name__)
 CHOOSE_TEAM, ADD_TO_TEAM = range(3,5)
 
 def join_team(update, context):
-    global counter
-    global teams
+    # global counter
+    # global teams
     with open('teams.json') as json_file:
         teams = json.load(json_file)
-    logger.info(f"{update.message.from_user.name} is joining team number "+ str(counter))
+    context.user_data['joiner_teams'] = teams
+    # logger.info(f"{update.message.from_user.name} is joining team number "+ str(counter))
     team_names = "<u>Teams:</u> \n"
     reply_keyboard = []
+    
     for i in range(1,1+len(teams["teams"])):
         team_names += f"  {i}: {teams['teams'][i-1]['group_name']}\n"
         reply_keyboard += [str(i)]
@@ -42,6 +44,7 @@ def join_team(update, context):
     
 
 def choose_team(update, context):
+    teams = context.user_data['joiner_teams']
     user = update.message.from_user
     team_no = update.message.text
     if team_no.lower() == 'cancel':
@@ -80,7 +83,3 @@ def choose_team(update, context):
     update.message.reply_text('No group with name: "'+ team_name + '"')
     return ConversationHandler.END 
 
-    #if (user in teams["teams"]
-
-def add_to_team(update,context):
-    return ConversationHandler.END 

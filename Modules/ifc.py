@@ -23,11 +23,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-ifc_file_name = None
-ifc_name = None
-stretched_points = None
-old_file_name = None
-
 def split_triangles_points(items, counter):
     lines = items[0].split('\n')
     points = []
@@ -191,10 +186,14 @@ def save_to_new_ifc(new_all_points, old_file_name, new_file_name):
 
 def ifc_start(update, context):
     all_files = getJson(files_dir / 'files.json')
-    global ifc_file_name
-    if (ifc_file_name == None):
+    try:
+        ifc_file_name = context.user_data['ifc_file_name']
+    except:
         try:
-            update.message.reply_text(show_all_file_type(all_files, 'ifc'))
+            ifc_files = show_all_file_type(all_files, 'ifc')
+            if (ifc_files == ""):
+                raise Exception('No ifc files uploaded')
+            update.message.reply_text(ifc_files)
         except:
             update.message.reply_text('You have no files stored of type IFC. Try using /sendfile to store one. ')
             return ConversationHandler.END
@@ -207,6 +206,7 @@ def ifc_start(update, context):
     return GET_IFC_RESPONSE
 
 def get_ifc_response(update, context):
+    ifc_file_name = context.user_data['ifc_file_name']
     json_obj = getJson(files_dir / ifc_file_name)
     all_files = getJson(files_dir / 'files.json')
     option = update.message.text
@@ -220,7 +220,6 @@ def get_ifc_response(update, context):
         update.message.reply_text('Which IFC file would you like to load? Type the name of the file')
         return GET_IFC_FILE
     elif (option == 'View'):
-        print(ifc_file_name)
         all_points, all_triangles = get_all_triangles_points(files_dir / ifc_file_name)
         mesh = get_mesh(all_points, all_triangles)
         show_building(mesh)
@@ -267,7 +266,6 @@ def get_ifc_response(update, context):
         return ConversationHandler.END
 
 def get_ifc_file(update, context):
-    global ifc_file_name
     ifc_file_name = update.message.text
     ifc_file_name = ifc_file_name.lower()
     all_files = getJson(files_dir / 'files.json')
@@ -276,6 +274,7 @@ def get_ifc_file(update, context):
         index = [index for index, item in enumerate(all_ifc) if item['name'].lower() == ifc_file_name][0]
         ifc_file_name = all_ifc[index]['file_name']
         update.message.reply_text('Successfully loaded file!')
+        context.user_data['ifc_file_name'] = ifc_file_name
         return ifc_start(update, context)
     except:
         update.message.reply_text('No file with this filename')
@@ -283,7 +282,7 @@ def get_ifc_file(update, context):
         return ConversationHandler.END
 
 def get_stretch_parameters(update, context):
-    global stretched_points
+    ifc_file_name = context.user_data['ifc_file_name']
     stretch_parameters = update.message.text
     try:
         parameters = stretch_parameters.split(',')
@@ -293,6 +292,7 @@ def get_stretch_parameters(update, context):
         
         all_points, all_triangles = get_all_triangles_points(files_dir / ifc_file_name)
         stretched_points = stretch_z(all_points, float(parameters[0]), float(parameters[1]), float(parameters[2]))
+        context.user_data['stretched_points'] = stretched_points
         update.message.reply_text(f'Success! Stretched all points along the z axis from {float(parameters[0])} to {float(parameters[1])} by {float(parameters[2])}')
         update.message.reply_text(f'Showing preview of stretching:')
         show_building(get_mesh(stretched_points, all_triangles))
@@ -306,8 +306,8 @@ def get_stretch_parameters(update, context):
         return ConversationHandler.END
 
 def get_stretched_name(update, context):
-    global ifc_name
     ifc_name = update.message.text
+    context.user_data['ifc_name'] = ifc_name
     if ifc_name.lower() == 'cancel':
         update.message.reply_text('Let\'s forget that ever happened...')
         return ConversationHandler.END
@@ -315,6 +315,10 @@ def get_stretched_name(update, context):
     return SAVE_STRETCHED
 
 def save_stretched(update, context):
+    ifc_file_name = context.user_data['ifc_file_name']
+    ifc_name = context.user_data['ifc_name']
+    stretched_points = context.user_data['stretched_points']
+
     user = update.message.from_user
     response = update.message.text
     from Modules.files import save_file_type
@@ -322,7 +326,7 @@ def save_stretched(update, context):
     file_title = 'stretched' + str(int(time.time()))
     # with Path(files_dir / file_title).open(mode='w') as outfile:
     #     json.dump(j, outfile, indent=4)
-
+    
     save_to_new_ifc(stretched_points, ifc_file_name, file_title)
     save_file_type(update, ifc_name, file_title + '.json', response, 'ifc', user)
     update.message.reply_text('Successfully saved IFC file! To view, use /ifc')
@@ -331,6 +335,7 @@ def save_stretched(update, context):
 
 
 def start_analysis(update, context):
+    ifc_file_name = context.user_data['ifc_file_name']
     json_obj = getJson(files_dir / ifc_file_name)
     classes = {}
     for item in json_obj:

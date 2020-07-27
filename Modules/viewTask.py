@@ -18,8 +18,6 @@ logger = logging.getLogger(__name__)
 
 
 def view_task(update, context):
-
-    global teams
     with open('teams.json') as json_file:
         teams = json.load(json_file)
         
@@ -38,6 +36,4 @@ def view_task(update, context):
 
             #reply_keyboard += [str(j)]
     update.message.reply_text(tasks_string)
-
-
     return ConversationHandler.END  

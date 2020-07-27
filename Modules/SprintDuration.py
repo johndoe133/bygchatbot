@@ -77,8 +77,8 @@ hour=""
 minute=""
 def choose_time(update, context):
     startTime = update.message.text
-    global hour
-    global minute
+    # global hour
+    # global minute
     try:
         [hour,minute] = startTime.split(":")
         hour = int(hour)
@@ -91,26 +91,32 @@ def choose_time(update, context):
         update.message.reply_text("Invalid time")
         return ConversationHandler.END
 
+    context.user_data['hour'] = hour
+    context.user_data['minute'] = minute
 
     update.message.reply_text("Type the date that you want the first sprint meeting to be. Use the format <code>DD.MM.YYYY</code>")
     
     return CHOOSE_FIRST
 
 date=datetime(1,1,1)
+hour = 0
+minute = 0
 def choose_first(update, context):
+    start_day = update.message.text
     global hour
     global minute
-    global date
-    startDay = update.message.text
+    hour = context.user_data['hour'] 
+    minute = context.user_data['minute']
 
     try:
-        [day,month,year] = startDay.split('.')
+        [day,month,year] = start_day.split('.')
         day,month,year = int(day),int(month),int(year)
         date = datetime(year,month,day,hour,minute)
     
     except:
         update.message.reply_text("Invalid date, cancelling")
         return ConversationHandler.END 
+    
     
     timezone = pytz.timezone("Europe/Amsterdam")
     d_aware = timezone.localize(date)
